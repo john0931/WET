@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#283b34">
+<title>Kitchen Studio</title>
+<style>
+:root{--ink:#263a33;--paper:#f7f4ee;--card:#fff;--line:#d9ddd9;--accent:#b68a55;--muted:#66756f}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#ece8df;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{overscroll-behavior:none}.app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:max(10px,env(safe-area-inset-top)) 12px 9px;background:rgba(247,244,238,.96);border-bottom:1px solid var(--line);z-index:5}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}.mark{width:34px;height:34px;border-radius:10px;background:var(--ink);color:white;display:grid;place-items:center;font-weight:800}
+h1{font-size:16px;margin:0;white-space:nowrap}.sub{font-size:11px;color:var(--muted);margin-top:2px}.status{font-size:10px;background:#e7efe9;border:1px solid #cad9cf;border-radius:999px;padding:5px 8px;white-space:nowrap}
+#stage{position:relative;min-height:0;touch-action:none;background:linear-gradient(#e8e4db,#d8d2c7)}
+canvas{display:block;width:100%;height:100%}.hint{position:absolute;left:10px;top:10px;background:rgba(255,255,255,.86);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:7px 9px;font-size:11px;line-height:1.3;pointer-events:none}
+.toolbar{padding:8px 10px max(8px,env(safe-area-inset-bottom));background:rgba(247,244,238,.97);border-top:1px solid var(--line);display:grid;gap:7px;z-index:5}
+.row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.row::-webkit-scrollbar{display:none}
+button{appearance:none;border:1px solid #c9cec9;background:#fff;color:var(--ink);border-radius:10px;min-height:42px;padding:8px 11px;font-weight:700;font-size:12px;white-space:nowrap}
+button.active{background:var(--ink);color:#fff;border-color:var(--ink)}button:active{transform:scale(.98)}
+.label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:800;padding:0 2px}
+.info{font-size:11px;line-height:1.35;color:#43544e;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 9px}
+.sheet{position:fixed;inset:auto 10px calc(84px + env(safe-area-inset-bottom)) 10px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 45px rgba(0,0,0,.18);padding:14px;z-index:20;display:none;max-height:55vh;overflow:auto}
+.sheet.open{display:block}.sheet h2{font-size:16px;margin:0 0 8px}.sheet p,.sheet li{font-size:13px;line-height:1.45}.close{float:right;min-height:34px}
+@media(min-width:800px){header{padding:12px 18px}.toolbar{grid-template-columns:auto 1fr auto;align-items:center;padding:10px 16px}.info{max-width:440px}.hint{font-size:12px}.app{grid-template-rows:auto 1fr auto}}
+@media(orientation:landscape) and (max-height:520px){header{padding:5px 10px}.mark{width:28px;height:28px}h1{font-size:14px}.sub{display:none}.toolbar{grid-template-columns:auto auto 1fr;padding:5px 8px}.info{display:none}button{min-height:34px;padding:5px 9px}.label{display:none}}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="mark">K</div><div><h1>Kitchen Studio</h1><div class="sub">Mobile concept model · v.4 layout direction</div></div></div>
+  <button id="infoBtn" class="status">About</button>
+</header>
+<div id="stage">
+  <div class="hint">Drag to orbit · pinch to zoom · two-finger pan<br><strong>Floor:</strong> mixed Valdorcia with 45° transition</div>
+</div>
+<div class="toolbar">
+  <div><div class="label">Countertop</div><div class="row"><button id="prado" class="active">Calacatta Prado</button><button id="musq">Eternal Musq</button></div></div>
+  <div><div class="label">View</div><div class="row"><button data-view="overview" class="view active">Overview</button><button data-view="sink" class="view">Sink wall</button><button data-view="range" class="view">Range wall</button><button data-view="top" class="view">Floor / top</button></div></div>
+  <div class="info" id="materialInfo"><strong>Prado:</strong> warm ivory-white with restrained beige/taupe veining. Quieter against cherry, Natural Cream, brass and terracotta.</div>
+</div>
+</div>
+<div class="sheet" id="sheet">
+  <button class="close" id="closeBtn">Close</button>
+  <h2>Mobile Kitchen Studio</h2>
+  <p>This is a privacy-safe visual model for phone use. It contains no home address, names, email addresses or project budget.</p>
+  <ul>
+    <li><strong>Floor:</strong> mixed-format terracotta, represented as a modular field with a visible 45° chamfer at the hardwood transition.</li>
+    <li><strong>Countertops:</strong> conceptual textures calibrated to the physical Prado and Musq samples. Full slab selection still governs.</li>
+    <li><strong>Cabinet palette:</strong> cherry uppers, warm cream lowers, light hood and brass hardware.</li>
+  </ul>
+  <p>For installation, the tile pattern should be dry-laid strategically from visible boundaries, especially the diagonal transition, to avoid awkward sliver cuts.</p>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const stage=document.getElementById('stage');
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xe5e1d8);
+const camera=new THREE.PerspectiveCamera(44,1,.1,2000);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.shadowMap.enabled=true;
+stage.appendChild(renderer.domElement);
+
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=.07;
+controls.minDistance=85;
+controls.maxDistance=520;
+controls.target.set(95,34,65);
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x8e7966,2.15));
+const sun=new THREE.DirectionalLight(0xfff2dc,3.3);
+sun.position.set(70,220,-80);sun.castShadow=true;scene.add(sun);
+
+function mat(c,rough=.55){return new THREE.MeshStandardMaterial({color:c,roughness:rough});}
+const cream=mat(0xe6dcc4,.48), cherry=mat(0x8e5635,.48), white=mat(0xf3efe5,.5);
+const brass=new THREE.MeshStandardMaterial({color:0xb18a4b,metalness:.8,roughness:.28});
+const steel=new THREE.MeshStandardMaterial({color:0xaab0b0,metalness:.78,roughness:.3});
+const glass=new THREE.MeshPhysicalMaterial({color:0xffffff,transparent:true,opacity:.22,roughness:.08,metalness:.05});
+const wood=mat(0x8f5b36,.72), grout=mat(0xd8c9b6,.9);
+
+function box(w,h,d,x,y,z,m,name=''){
+ const g=new THREE.BoxGeometry(w,h,d),o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;o.name=name;scene.add(o);return o;
+}
+function planeShape(points,m,y=.05){
+ const s=new THREE.Shape();s.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)s.lineTo(points[i][0],points[i][1]);s.closePath();
+ const g=new THREE.ShapeGeometry(s),o=new THREE.Mesh(g,m);o.rotation.x=-Math.PI/2;o.position.y=y;o.receiveShadow=true;scene.add(o);return o;
+}
+function makeCounterTexture(kind){
+ const c=document.createElement('canvas');c.width=1024;c.height=512;const x=c.getContext('2d');
+ x.fillStyle=kind==='prado'?'#eee9dd':'#eee8da';x.fillRect(0,0,c.width,c.height);
+ let seed=kind==='prado'?27:71;const rnd=()=>((seed=(seed*48271)%2147483647)/2147483647);
+ for(let i=0;i<(kind==='prado'?5:10);i++){
+   x.beginPath();let px=-80+rnd()*200,py=rnd()*512;x.moveTo(px,py);
+   const seg=7+Math.floor(rnd()*6);
+   for(let s=0;s<seg;s++){px+=90+rnd()*130;py+=(rnd()-.5)*(kind==='prado'?45:95);x.lineTo(px,py);}
+   x.strokeStyle=kind==='prado'?'rgba(157,132,100,.25)':'rgba(174,126,50,.58)';
+   x.lineWidth=kind==='prado'?1.2+rnd()*1.8:2.2+rnd()*3.5;x.stroke();
+ }
+ for(let i=0;i<1600;i++){x.fillStyle='rgba(80,70,55,'+(rnd()*.025)+')';x.fillRect(rnd()*1024,rnd()*512,1,1);}
+ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1.8,1.1);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
+const counterMat=new THREE.MeshStandardMaterial({map:makeCounterTexture('prado'),roughness:.22});
+
+function makeTileTexture(){
+ const c=document.createElement('canvas');c.width=768;c.height=768;const x=c.getContext('2d');
+ x.fillStyle='#d8c8b3';x.fillRect(0,0,768,768);
+ const colors=['#b87c57','#a96f50','#c08762','#9e6649','#b57a55'];
+ const rects=[[0,0,192,288],[192,0,192,144],[384,0,288,144],[672,0,96,192],[192,144,96,192],[288,144,192,192],[480,144,192,288],[0,288,192,192],[192,336,192,144],[384,336,96,192],[480,432,192,144],[672,192,96,288],[0,480,96,192],[96,480,288,192],[384,528,288,144],[672,480,96,192],[0,672,192,96],[192,672,288,96],[480,576,192,192],[672,672,96,96]];
+ rects.forEach((r,i)=>{x.fillStyle=colors[i%colors.length];x.fillRect(r[0]+3,r[1]+3,r[2]-6,r[3]-6);
+   for(let k=0;k<120;k++){x.fillStyle='rgba(70,45,30,'+(Math.random()*.035)+')';x.fillRect(r[0]+Math.random()*r[2],r[1]+Math.random()*r[3],1,1);}
+ });
+ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2.1,1.45);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
+const tileMat=new THREE.MeshStandardMaterial({map:makeTileTexture(),roughness:.82});
+
+const W=208,D=142;
+// Hardwood under entire room
+box(W,1.2,D,W/2,-.7,D/2,wood,'Hardwood');
+// Tile field with 24 x 24 chamfer at front-left transition
+planeShape([[0,0],[W,0],[W,D],[24,D],[0,D-24]],tileMat,.02);
+// visible hardwood transition strip around chamfer only
+const edge=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,.12,D-24),new THREE.Vector3(24,.12,D)]);
+scene.add(new THREE.Line(edge,new THREE.LineBasicMaterial({color:0x6c452d})));
+
+// Sink wall at z=8
+const z1=10;
+// fridge
+box(36,70,27,20,35,z1+12,steel,'Fridge');
+// lower run
+box(18,30,24,48,15,z1+12,cream);box(24,30,24,69,15,z1+12,cream);
+box(36,30,24,99,15,z1+12,white,'Sink base');box(30,30,24,132,15,z1+12,cream);box(30,30,24,162,15,z1+12,cream);
+box(147,1.3,25.5,112,31,z1+12,counterMat,'Sink countertop');
+// apron sink
+box(30,9,18,99,29,z1+12,white,'Apron sink');
+// uppers
+function upper(x,w){box(w,40,14,x,65,z1+7,cherry);box(w-3,34,.3,x,65,z1+14.2,glass);}
+upper(57,18);upper(82,30);upper(116,30);upper(142,18);
+// window
+box(31,44,1.2,99,66,z1+.2,mat(0xbfd1d2,.25));
+// brass faucet
+const fg=new THREE.CylinderGeometry(.6,.6,13,18);const fm=new THREE.Mesh(fg,brass);fm.position.set(100,40,z1+1);scene.add(fm);
+
+// Range wall on right (x=194)
+const xr=196;
+box(30,30,24,xr-15,15,48,cream);box(30,30,24,xr-15,15,78,cream);box(36,30,24,xr-18,15,108,cream);
+box(92,1.3,25.5,xr-24,31,78,counterMat);
+box(30,30,26,xr-15,16,78,steel,'Range');
+upperRange(48);upperRange(108);
+function upperRange(z){box(24,40,14,xr-7,65,z,cherry);box(.3,34,21,xr+.2,65,z,glass);}
+box(36,32,22,xr-11,72,78,white,'Hood');
+
+// Peninsula
+box(62,30,24,86,15,124,cream);
+box(74.5,1.3,31,88,31,124,counterMat,'Peninsula');
+// bookshelves accents
+box(55,3,10,88,17,140,cherry);box(55,3,10,88,9,140,cherry);
+
+// walls as subtle planes
+box(W,86,1,W/2,43,0,mat(0xdad6cc,.9));
+box(1,86,D,W,43,D/2,mat(0xdad6cc,.9));
+
+function applyCounter(kind){
+ counterMat.map.dispose();counterMat.map=makeCounterTexture(kind);counterMat.needsUpdate=true;
+ document.getElementById('prado').classList.toggle('active',kind==='prado');
+ document.getElementById('musq').classList.toggle('active',kind==='musq');
+ document.getElementById('materialInfo').innerHTML=kind==='prado'
+ ?'<strong>Prado:</strong> warm ivory-white with restrained beige/taupe veining. Quieter against cherry, Natural Cream, brass and terracotta.'
+ :'<strong>Musq:</strong> warm white with stronger ochre/gold branching movement. More expressive and warmer overall.';
+}
+document.getElementById('prado').onclick=()=>applyCounter('prado');
+document.getElementById('musq').onclick=()=>applyCounter('musq');
+
+const views={
+ overview:{p:[285,175,260],t:[102,34,70]},
+ sink:{p:[100,90,180],t:[105,42,20]},
+ range:{p:[45,90,78],t:[178,42,78]},
+ top:{p:[104,330,72],t:[104,0,72]}
+};
+function setView(k){
+ const v=views[k];camera.position.set(...v.p);controls.target.set(...v.t);controls.update();
+ document.querySelectorAll('.view').forEach(b=>b.classList.toggle('active',b.dataset.view===k));
+}
+document.querySelectorAll('.view').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+
+document.getElementById('infoBtn').onclick=()=>document.getElementById('sheet').classList.add('open');
+document.getElementById('closeBtn').onclick=()=>document.getElementById('sheet').classList.remove('open');
+
+function resize(){
+ const r=stage.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);resize();setView('overview');
+
+function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)}loop();
+</script>
+</body>
+</html>
