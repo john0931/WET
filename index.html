@@ -1,1 +1,118 @@
-The requested file reference is not currently visible. Use files.search or files.list to rediscover the file, then retry with a returned ref_id or file_id.
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#263b35">
+<title>Kitchen Studio</title>
+<style>
+:root{--ink:#263b35;--paper:#f7f4ee;--line:#d7ddd8;--muted:#68756f;--warm:#b58b59}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#e8e3da;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{overscroll-behavior:none}.app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:max(9px,env(safe-area-inset-top)) 10px 8px;background:rgba(247,244,238,.97);border-bottom:1px solid var(--line);z-index:10}.brand{display:flex;align-items:center;gap:9px}.mark{width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:900}.title{font-size:16px;font-weight:850;line-height:1.05}.sub{font-size:10.5px;color:var(--muted);margin-top:3px}.topbtn{min-height:36px;padding:7px 10px}
+#stage{position:relative;min-height:0;touch-action:none;background:linear-gradient(#e5e1d8,#d3cdc2)}canvas{display:block;width:100%;height:100%}
+.hint{position:absolute;top:9px;left:9px;right:auto;max-width:min(440px,calc(100% - 18px));padding:7px 9px;border-radius:10px;background:rgba(255,255,255,.88);border:1px solid rgba(0,0,0,.08);backdrop-filter:blur(9px);font-size:10.8px;line-height:1.35;pointer-events:none}.hint b{font-weight:850}.badge{position:absolute;right:9px;top:9px;padding:5px 7px;border-radius:999px;background:rgba(38,59,53,.88);color:#fff;font-size:9.5px;letter-spacing:.03em;pointer-events:none}
+.toolbar{padding:7px 9px max(7px,env(safe-area-inset-bottom));background:rgba(247,244,238,.98);border-top:1px solid var(--line);display:grid;gap:6px;z-index:10}.row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.row::-webkit-scrollbar{display:none}.label{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:850;margin:0 0 3px 2px}
+button{appearance:none;border:1px solid #c7cec9;background:#fff;color:var(--ink);border-radius:10px;min-height:39px;padding:7px 10px;font-size:11.5px;font-weight:800;white-space:nowrap}button.active{background:var(--ink);border-color:var(--ink);color:#fff}button:active{transform:scale(.98)}
+.info{background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:10.8px;line-height:1.35;color:#43524d}.sheet{position:fixed;left:9px;right:9px;bottom:calc(80px + env(safe-area-inset-bottom));max-height:58vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.2);padding:13px;z-index:30;display:none}.sheet.open{display:block}.sheet h2{font-size:16px;margin:0 0 7px}.sheet p,.sheet li{font-size:12.5px;line-height:1.45}.close{float:right;min-height:32px}.sep{height:1px;background:var(--line);margin:9px 0}
+@media(min-width:800px){header{padding:12px 16px}.toolbar{grid-template-columns:auto auto 1fr;align-items:end;padding:10px 14px}.info{max-width:460px}.title{font-size:18px}.sub{font-size:11px}}
+@media(orientation:landscape) and (max-height:540px){header{padding:4px 8px}.mark{width:28px;height:28px}.title{font-size:14px}.sub{display:none}.toolbar{grid-template-columns:auto auto 1fr;padding:4px 7px}.info{font-size:9.8px;padding:5px 7px}.label{display:none}button{min-height:31px;padding:4px 8px}.hint{font-size:9.5px;padding:5px 7px}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><div class="mark">K</div><div><div class="title">Kitchen Studio</div><div class="sub">Higher-fidelity mobile concept · v.4 baseline</div></div></div>
+ <div class="row"><button class="topbtn" id="resetBtn">Reset</button><button class="topbtn" id="infoBtn">About</button></div>
+</header>
+<div id="stage"><div class="hint">Drag to orbit · pinch to zoom · two-finger pan<br><b>Floor:</b> mixed Valdorcia · existing 45° hardwood transition</div><div class="badge">CONCEPT MODEL</div></div>
+<div class="toolbar">
+ <div><div class="label">Countertop</div><div class="row"><button id="prado" class="active">Calacatta Prado</button><button id="musq">Eternal Musq</button></div></div>
+ <div><div class="label">View</div><div class="row"><button class="view active" data-view="overview">Overview</button><button class="view" data-view="sink">Sink wall</button><button class="view" data-view="range">Range wall</button><button class="view" data-view="peninsula">Peninsula</button><button class="view" data-view="top">Floor / top</button></div></div>
+ <div class="info" id="materialInfo"><b>Prado:</b> warm ivory-white with restrained beige/taupe veining. The quieter of the two physical samples.</div>
+</div>
+</div>
+<div class="sheet" id="sheet"><button class="close" id="closeBtn">Close</button><h2>About this model</h2><p>This public/mobile version uses the current v.4 layout direction and removes personal information, address and budget data.</p><div class="sep"></div><ul><li>Natural Cream lower/tall cabinets with shaker-style fronts.</li><li>Cherry Floris-style uppers with glass and mullion detailing.</li><li>Custom light hood between the 24-inch glass uppers.</li><li>Apron sink, dishwasher, pantry, existing-style stainless appliances and dining-side peninsula shelves.</li><li>Mixed-format Valdorcia terracotta with the existing diagonal tile-to-hardwood transition represented.</li></ul><p><b>Important:</b> geometry is for design review, not fabrication. Field measurements, cabinet shop drawings, sink template and tile dry-lay govern construction.</p></div>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const stage=document.getElementById('stage');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xdcd7ce);
+const camera=new THREE.PerspectiveCamera(43,1,.2,1600);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;stage.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.075;controls.minDistance=65;controls.maxDistance=520;controls.maxPolarAngle=Math.PI/2.03;
+scene.add(new THREE.HemisphereLight(0xffffff,0x8d745d,2));const sun=new THREE.DirectionalLight(0xfff0d9,3.2);sun.position.set(70,230,-90);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);const fill=new THREE.DirectionalLight(0xffffff,.8);fill.position.set(-80,110,180);scene.add(fill);
+
+const W=208.125,D=141.75,CT=.787,H=34.5+CT,SINK=104.625,CS=61.125;
+const root=new THREE.Group();scene.add(root);
+function std(color,rough=.5,metal=0){return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal})}
+const M={cream:std(0xe4d8bd,.42),cherry:std(0x8b5131,.42),cherryDark:std(0x704128,.5),white:std(0xf2eee5,.45),inside:std(0xf7f4ec,.55),toe:std(0xa8a295,.7),steel:std(0xaeb3b3,.28,.78),black:std(0x202523,.3),brass:std(0xb38c4c,.27,.8),wood:std(0x8d5b39,.75),wall:std(0xe4dfd5,.85),blue:std(0x6f93a5,.6)};
+M.glass=new THREE.MeshPhysicalMaterial({color:0xf7ffff,transparent:true,opacity:.22,roughness:.08,metalness:.02,clearcoat:.5,depthWrite:false});
+
+function box(w,h,d,x,y,z,m,parent=root,rot=0,name=''){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.rotation.y=rot;o.castShadow=o.receiveShadow=true;o.name=name;parent.add(o);return o}
+function cyl(rt,rb,h,x,y,z,m,parent=root,rotX=0){const o=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,20),m);o.position.set(x,y,z);o.rotation.x=rotX;o.castShadow=true;parent.add(o);return o}
+function makeCanvasTexture(kind){const c=document.createElement('canvas');c.width=1024;c.height=512;const x=c.getContext('2d');x.fillStyle=kind==='prado'?'#eee9dd':'#eee7d9';x.fillRect(0,0,c.width,c.height);let seed=kind==='prado'?41:83;const rnd=()=>((seed=(seed*48271)%2147483647)/2147483647);const lines=kind==='prado'?6:12;for(let i=0;i<lines;i++){x.beginPath();let px=-100+rnd()*220,py=rnd()*512;x.moveTo(px,py);for(let j=0;j<7+Math.floor(rnd()*6);j++){px+=75+rnd()*140;py+=(rnd()-.5)*(kind==='prado'?38:105);x.lineTo(px,py)}x.strokeStyle=kind==='prado'?'rgba(154,129,96,.24)':'rgba(177,126,45,.58)';x.lineWidth=kind==='prado'?1.2+rnd()*1.5:2.0+rnd()*3.6;x.stroke()}for(let i=0;i<1300;i++){x.fillStyle='rgba(70,60,48,'+(rnd()*.02)+')';x.fillRect(rnd()*1024,rnd()*512,1,1)}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1.7,1.05);t.colorSpace=THREE.SRGBColorSpace;return t}
+const counterMat=new THREE.MeshPhysicalMaterial({map:makeCanvasTexture('prado'),roughness:.2,clearcoat:.5,clearcoatRoughness:.18});
+
+function tileTexture(){const c=document.createElement('canvas');c.width=c.height=768;const x=c.getContext('2d');x.fillStyle='#d9cbb8';x.fillRect(0,0,768,768);const C=['#b57b57','#a86d4d','#bf8661','#9d6549','#b27854'];const R=[[0,0,192,288],[192,0,192,144],[384,0,288,144],[672,0,96,192],[192,144,96,192],[288,144,192,192],[480,144,192,288],[0,288,192,192],[192,336,192,144],[384,336,96,192],[480,432,192,144],[672,192,96,288],[0,480,96,192],[96,480,288,192],[384,528,288,144],[672,480,96,192],[0,672,192,96],[192,672,288,96],[480,576,192,192],[672,672,96,96]];let seed=17;const rnd=()=>((seed=(seed*48271)%2147483647)/2147483647);R.forEach((r,i)=>{x.fillStyle=C[i%C.length];x.fillRect(r[0]+3,r[1]+3,r[2]-6,r[3]-6);for(let k=0;k<100;k++){x.fillStyle='rgba(60,40,28,'+(rnd()*.04)+')';x.fillRect(r[0]+rnd()*r[2],r[1]+rnd()*r[3],1,1)}});const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2.4,1.65);t.colorSpace=THREE.SRGBColorSpace;return t}
+const tileMat=new THREE.MeshStandardMaterial({map:tileTexture(),roughness:.84});
+function shapeFloor(points,m,y=.02){const s=new THREE.Shape();s.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)s.lineTo(points[i][0],points[i][1]);s.closePath();const o=new THREE.Mesh(new THREE.ShapeGeometry(s),m);o.rotation.x=-Math.PI/2;o.position.y=y;o.receiveShadow=true;root.add(o);return o}
+
+// Hardwood field and selected tile field. The diagonal is intentionally obvious in plan/top view.
+box(W,1.2,D,W/2,-.72,D/2,M.wood,root,0,'Hardwood');const diagRun=58,diagStart=D-diagRun;shapeFloor([[0,0],[W,0],[W,D],[diagRun,D],[0,diagStart]],tileMat,.03);const edgeGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,.12,diagStart),new THREE.Vector3(diagRun,.12,D)]);root.add(new THREE.Line(edgeGeo,new THREE.LineBasicMaterial({color:0x5f3e28})));
+
+// Room walls, kept low-opacity visually through neutral finish.
+box(W,90,2,W/2,45,-3,M.wall);box(2,90,88,W+3,45,D-44,M.wall);box(88,90,2,164,45,D+3,M.wall);
+
+function handleBar(x,y,z,parent,vertical=false){const b=box(vertical?1:5.5,vertical?5.5:1,.8,x,y,z,M.brass,parent);return b}
+function shakerPanel(w,h,x,y,z,parent,m,glass=false,mullions=true){const rail=2.1,depth=.55;if(glass){box(w-3.6,h-3.6,.28,x,y,z-.1,M.glass,parent);box(w,rail,depth,x,y+h/2-rail/2,z,m,parent);box(w,rail,depth,x,y-h/2+rail/2,z,m,parent);box(rail,h,depth,x-w/2+rail/2,y,z,m,parent);box(rail,h,depth,x+w/2-rail/2,y,z,m,parent);if(mullions){box(.9,h-4.2,.6,x,y,z+.05,m,parent);box(w-4.2,.9,.6,x,y,z+.05,m,parent)}}else{box(w,h,depth,x,y,z,m,parent);box(w-4,h-4,.18,x,y,z+.32,M.inside,parent)}}
+function cabinet(w,h,depth,x,z,rot=0,type='drawers',upper=false,bottom=4.5,draws=[5,10,15],finish='cream',glass=false){const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=rot;root.add(g);const m=finish==='cherry'?M.cherry:M.cream;box(w,.65,depth,0,bottom+.33,0,m,g);box(w,.65,depth,0,bottom+h-.33,0,m,g);box(.65,h,depth,-w/2+.33,bottom+h/2,0,m,g);box(.65,h,depth,w/2-.33,bottom+h/2,0,m,g);box(w,h,.4,0,bottom+h/2,-depth/2+.2,M.inside,g);if(!upper)box(w,bottom,depth-2.5,0,bottom/2,-1.3,M.toe,g);const fz=depth/2+.3;if(type==='drawers'){let top=bottom+h;for(const dh of draws){shakerPanel(w-.35,dh-.22,0,top-dh/2,fz,g,m,false);handleBar(0,top-2.2,fz+.55,g,false);top-=dh}}else if(type==='pantry'){shakerPanel(w-.35,59.7,0,bottom+60,fz,g,m,false);handleBar(w/2-2,bottom+52,fz+.55,g,true);for(const yy of [7.5,22.5]){shakerPanel(w-.35,14.7,0,bottom+yy,fz,g,m,false);handleBar(0,bottom+yy+4.5,fz+.55,g,false)}}else if(type==='sink'){for(const a of [-1,1]){shakerPanel(w/2-.25,19.7,a*w/4,bottom+10,fz,g,m,false);handleBar(a*2,bottom+16.5,fz+.55,g,true)}}else if(type==='pullout'){shakerPanel(w-.35,h-.25,0,bottom+h/2,fz,g,m,false);handleBar(0,bottom+h-3,fz+.55,g,false)}else{if(upper)for(let yy=bottom+10;yy<bottom+h-2;yy+=11)box(w-2,.45,depth-1,0,yy,0,M.inside,g);if(w<=18){shakerPanel(w-.3,h-.3,0,bottom+h/2,fz,g,m,glass,true);handleBar(w/2-2,bottom+3.5,fz+.55,g,true)}else for(const a of [-1,1]){shakerPanel(w/2-.3,h-.3,a*w/4,bottom+h/2,fz,g,m,glass,true);handleBar(a*2,bottom+3.5,fz+.55,g,true)}}return g}
+function slab(points,y,th){const s=new THREE.Shape();points.forEach((p,i)=>i?s.lineTo(...p):s.moveTo(...p));s.closePath();const g=new THREE.ExtrudeGeometry(s,{depth:th,bevelEnabled:false});g.rotateX(Math.PI/2);const m=new THREE.Mesh(g,counterMat);m.position.y=y;m.castShadow=m.receiveShadow=true;root.add(m);return m}
+function windowFrame(x,w,bottom,h){box(w+3,2,3,x,bottom-1,0,M.white);box(w+3,2,3,x,bottom+h+1,0,M.white);for(const a of [-1,1])box(2,h,3,x+a*(w/2+1),bottom+h/2,0,M.white);box(w,h,.35,x,bottom+h/2,-1,std(0xaec8c8,.2));box(1.1,h,.8,x,bottom+h/2,.5,M.white);box(w,1.1,.8,x,bottom+h*.5,.5,M.white)}
+
+// --- Sink wall based on v.4 dimensions ---
+windowFrame(SINK,33.125,40.3125,40);
+// Fridge enclosure and existing-style fridge
+box(37.5,95.5,.75,24.375,47.75,-.4,M.cream);box(.75,95.5,29,5.625,47.75,14.5,M.cream);box(.75,95.5,29,43.125,47.75,14.5,M.cream);box(35.5,69,27,24.375,35.5,14,M.steel);for(const a of [-1,1]){box(17.3,44,.7,24.375+a*8.75,47,28,M.steel);box(.65,27,.8,24.375+a*2,47,29,M.brass)}box(35.2,22,.75,24.375,13.5,28,M.steel);box(28,.65,.8,24.375,22,29,M.brass);
+cabinet(36,20,26.875,24.375,13.4375,0,'doors',false,74.5,[5,10,15],'cream',false);
+cabinet(18,90,24,52.125,12,0,'pantry',false,4.5,[5,10,15],'cream');cabinet(24,30,24,73.875,12,0,'pullout',false,4.5,[5,10,15],'cream');cabinet(36,30,24,SINK,12,0,'sink',false,4.5,[5,10,15],'cream');
+// Dishwasher
+box(23.7,33.5,24,135.375,17.5,12,M.steel);box(19,.65,.8,135.375,31.5,25,M.brass);
+cabinet(30,30,24,162.375,12,0,'drawers',false,4.5,[5,10,15],'cream');cabinet(30,30,24,192.375,12,0,'drawers',false,4.5,[15,15],'cream');
+const leftSink=SINK-16,rightSink=SINK+16;box(leftSink-CS,CT,25.625,(CS+leftSink)/2,H-CT/2,12.8125,counterMat);box(W-rightSink,CT,25.625,(W+rightSink)/2,H-CT/2,12.8125,counterMat);box(32,CT,4,SINK,H-CT/2,2,counterMat);
+// apron sink and faucet
+box(32,8.5,1.1,SINK,H-4.25,25.1,M.white);box(1,8,20,SINK-15.5,H-4,14,M.white);box(1,8,20,SINK+15.5,H-4,14,M.white);box(30,1,20,SINK,H-8,14,M.white);const faucet=cyl(.55,.55,13,SINK,H+7,3,M.brass);const spout=new THREE.Mesh(new THREE.TorusGeometry(5,.5,10,30,Math.PI),M.brass);spout.position.set(SINK,H+13,8);spout.rotation.z=Math.PI;root.add(spout);cyl(.55,.55,5,SINK+5,H+10,8,M.brass,root,Math.PI/2);
+// sink uppers: 18,18,30,30 exact positions
+cabinet(18,40,15.625,73.875,7.8125,0,'doors',true,54.5,[5,10,15],'cherry',true);cabinet(18,40,15.625,131.625,7.8125,0,'doors',true,54.5,[5,10,15],'cherry',true);cabinet(30,40,15.625,159.375,7.8125,0,'doors',true,54.5,[5,10,15],'cherry',true);cabinet(30,40,15.625,192.375,7.8125,0,'doors',true,54.5,[5,10,15],'cherry',true);
+// quartz strip/sill
+box(146.25,4.1875,.787,CS+146.25/2,H+2.09375,1,counterMat);
+// pendant
+cyl(.12,.12,13,SINK,83,13,M.black);const shade=cyl(2,5,5,SINK,78,13,M.black);shade.rotation.z=0;
+
+// --- Range wall / peninsula ---
+cabinet(36,30,24,74.125,D-12,Math.PI,'drawers',false,4.5,[15,15],'cream');cabinet(30,30,24,107.125,D-12,Math.PI,'drawers',false,4.5,[5,10,15],'cream');cabinet(18,30,24,161.125,D-12,Math.PI,'drawers',false,4.5,[5,10,15],'cream');
+// corner carcass + return
+box(38,30,24,189.125,19.5,D-12,M.cream);box(24,30,14,182.125,19.5,D-31,M.cream);box(38,4.5,35,189.125,2.25,D-17.5,M.toe);cabinet(30,30,24,182.125,D-53.75,-Math.PI/2,'drawers',false,4.5,[5,10,15],'cream');
+// range
+box(29.5,34.5,25.5,137.125,17.25,D-13,M.steel);box(29.5,.5,25,137.125,35,D-13,M.black);box(24,18,.5,137.125,14,D-26,M.black);box(25,.8,1.1,137.125,26,D-27,M.brass);for(const dx of [-9,-3,3,9]){const k=cyl(.75,.75,1,137.125+dx,31,D-26.5,M.brass);k.rotation.x=Math.PI/2}for(const dx of [-7,7])for(const dz of [-7,7]){const ring=new THREE.Mesh(new THREE.TorusGeometry(4,.15,6,32),M.steel);ring.rotation.x=Math.PI/2;ring.position.set(137.125+dx,35.35,D-13+dz);root.add(ring)}
+// exact stepped countertop geometry
+slab([[54.125,D],[122.125,D],[122.125,D-25.625],[84.75,D-25.625],[84.75,D-30.625],[54.125,D-30.625]],H,CT);slab([[152.125,D],[208.125,D],[208.125,D-74.5],[170.8125,D-74.5],[170.8125,D-25.625],[152.125,D-25.625]],H,CT);
+cabinet(24,40,15.625,107.125,D-7.8125,Math.PI,'doors',true,54.5,[5,10,15],'cherry',true);cabinet(24,40,15.625,167.125,D-7.8125,Math.PI,'doors',true,54.5,[5,10,15],'cherry',true);
+// custom hood: lower band + sloped box
+box(36,8,21.5,137.125,67,D-10.75,M.white);const hp=new THREE.Shape();hp.moveTo(0,0);hp.lineTo(21.5,0);hp.lineTo(15.625,23.4375);hp.lineTo(0,23.4375);hp.closePath();const hg=new THREE.ExtrudeGeometry(hp,{depth:36,bevelEnabled:false});const hood=new THREE.Mesh(hg,M.white);hood.rotation.y=Math.PI/2;hood.position.set(119.125,71,D);hood.castShadow=true;root.add(hood);
+// decorative blue/cream tile field behind range, simplified
+for(let xx=94.125;xx<180;xx+=6)for(let yy=H;yy<63;yy+=6){box(5.85,Math.min(5.85,63-yy),.55,xx+3,yy+Math.min(5.85,63-yy)/2,D-.5,M.white);const d=box(.8,.8,.25,xx+3,yy+3,D-.9,M.blue);d.rotation.z=Math.PI/4}
+// dining-side bookcase/shelves
+const sx=201.125,sz=D-37.25;box(.75,30,68,195.25,19.5,sz,M.cherry);for(const zz of [D-4,D-70.5])box(12,34.5,1,sx,17.25,zz,M.cherry);for(const yy of [5,15,25,34])box(12,.75,66.5,sx,yy,sz,M.cherry);box(12,30,.75,sx,19.5,sz,M.cherry);
+
+function applyCounter(kind){counterMat.map.dispose();counterMat.map=makeCanvasTexture(kind);counterMat.needsUpdate=true;document.getElementById('prado').classList.toggle('active',kind==='prado');document.getElementById('musq').classList.toggle('active',kind==='musq');document.getElementById('materialInfo').innerHTML=kind==='prado'?'<b>Prado:</b> warm ivory-white with restrained beige/taupe veining. The quieter of the two physical samples.':'<b>Musq:</b> warm white with stronger ochre/gold branching movement. More expressive and warmer overall.'}
+document.getElementById('prado').onclick=()=>applyCounter('prado');document.getElementById('musq').onclick=()=>applyCounter('musq');
+const V={overview:{p:[315,180,270],t:[112,35,72]},sink:{p:[109,82,198],t:[111,43,17]},range:{p:[34,84,78],t:[143,42,136]},peninsula:{p:[290,70,102],t:[186,23,105]},top:{p:[104,335,72],t:[104,0,72]}};
+function setView(k){const v=V[k];camera.position.set(...v.p);controls.target.set(...v.t);controls.update();document.querySelectorAll('.view').forEach(b=>b.classList.toggle('active',b.dataset.view===k))}document.querySelectorAll('.view').forEach(b=>b.onclick=()=>setView(b.dataset.view));document.getElementById('resetBtn').onclick=()=>setView('overview');
+document.getElementById('infoBtn').onclick=()=>document.getElementById('sheet').classList.add('open');document.getElementById('closeBtn').onclick=()=>document.getElementById('sheet').classList.remove('open');
+function resize(){const r=stage.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(stage);resize();setView('overview');
+(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)})();
+</script>
+</body></html>
