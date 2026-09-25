@@ -241,3 +241,5 @@ button,select,input,summary{-webkit-tap-highlight-color:transparent}
  .floor-summary,.floor-assumptions{font-size:8px}
  .project-floor-shortcut{align-items:flex-start;flex-direction:column;gap:7px}
 }
+
+.design-image-wrap[hidden]{display:none!important}
