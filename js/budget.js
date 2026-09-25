@@ -3,6 +3,7 @@
 const $=id=>document.getElementById(id), s=MUSIE.state;
 const clone=v=>JSON.parse(JSON.stringify(v));
 const initial=JSON.parse($('budget-data').textContent);
+const previousQuoteNotes={"15":"Sep. 22 IKEA list is $3,830 pre-tax. Hold for the October purchase window, but reconcile before ordering: V4 CAB-8 calls for a hidden inner drawer not apparent in the 18-inch components, and the list still includes one $66 36x30 wall cabinet that may be the hood cabinet earlier identified for removal.","16":"Kitchen only: 31 cartons / 240.25 sq.ft. mixed-format Valdorcia, installed in the selected modular pattern. The concept model also reflects the existing 45° diagonal edge where the current tile ends. The old $4,387.28 Centura request is correct for the combined kitchen + deferred basement order, not the current scope. Kitchen-only working total is about $2,533.93 tax-in.","19":"Existing quote total only. V4 requires 8 x 128mm pulls, 11 x 192mm pulls and 16 knobs; prior quote quantities differ and must be corrected.","20":"Dunbridge 14-inch pendant quote. Refresh price/stock before purchase.","21":"OGP price match: Eternal Musq 2cm $5,936 + $310 backsplash X + HST = about $7,057.98 tax-in; Calacatta Prado 2cm $6,193.50 + $310 + HST = about $7,348.96 tax-in. Prado premium is about $290.98 tax-in. Material/vendor not selected."};
 const canonical=initial.rows.map(r=>({row:r.row,name:r.name,keys:[...r.keys]}));
 const knownRows=new Set(canonical.map(r=>String(r.row)));
 const baseline={upper:'cherry',lower:'cream',upperColor:'#985f36',lowerColor:'#eadfc2',glass:'v3',mullions:true,hardware:'brass',counterThickness:'2',showRug:false,floor:'terra',tile:'blue',counter:'musq',appliance:'steel',cabinetOverrides:{},featureOverrides:{}};
@@ -92,11 +93,14 @@ function validateState(snapshot){
   if(snapshot.version!==undefined&&snapshot.version!==1)throw Error('Unsupported budget snapshot version.');
   const d=snapshot.data;
   if(!plain(d)||!safeNumber(d.ceiling)||d.ceiling===0||!safeNumber(d.reserveRate,1)||!Array.isArray(d.rows)||d.rows.length!==canonical.length)throw Error('Budget snapshot has invalid totals or cost rows.');
+  let quoteNotesRefreshed=false;
   const rows=d.rows.map((r,i)=>{
     const c=canonical[i];
     if(!plain(r)||r.row!==c.row||r.name!==c.name||!(r.amount===null||safeNumber(r.amount))||typeof r.note!=='string'||r.note.length>10000)throw Error('Budget snapshot cost row '+c.row+' is invalid.');
     if(!Array.isArray(r.keys)||JSON.stringify(r.keys)!==JSON.stringify(c.keys))throw Error('Budget snapshot pricing rules were modified at row '+c.row+'.');
-    return {row:c.row,name:c.name,amount:r.amount,note:r.note,keys:[...c.keys]};
+    const refresh=!String(snapshot.source||'').startsWith('Loaded ')&&r.note===previousQuoteNotes[c.row];
+    if(refresh)quoteNotesRefreshed=true;
+    return {row:c.row,name:c.name,amount:r.amount,note:refresh?initial.rows[i].note:r.note,keys:[...c.keys]};
   });
   if(!plain(snapshot.overrides))throw Error('Budget replacements must be an object.');
   const cleanOverrides={};
@@ -106,7 +110,7 @@ function validateState(snapshot){
     if(!Array.isArray(sig))throw Error('Budget replacement design reference is invalid.');
     cleanOverrides[key]={amount:o.amount,signature:o.signature};
   }
-  const nextSource=snapshot.source===undefined?'Saved concept budget. No automatic synchronization.':snapshot.source;
+  const nextSource=quoteNotesRefreshed?'Working baseline from 23 September Executive Summary; quote notes reconciled 25 September 2026. Excel remains the cost master.':snapshot.source===undefined?'Saved concept budget. No automatic synchronization.':snapshot.source;
   if(typeof nextSource!=='string'||nextSource.length>2000)throw Error('Budget source is invalid.');
   return {version:1,data:{ceiling:d.ceiling,reserveRate:d.reserveRate,rows},overrides:cleanOverrides,source:nextSource};
 }
