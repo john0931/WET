@@ -62,53 +62,36 @@ g.traverse(o=>{if(o.isMesh){const componentId=o.userData.id==='Cabinet hardware'
 function slabPoly(points,y,th,m,name,meta){const s=new THREE.Shape();points.forEach((p,i)=>i?s.lineTo(...p):s.moveTo(...p));s.closePath();const geo=new THREE.ExtrudeGeometry(s,{depth:th,bevelEnabled:false});geo.rotateX(Math.PI/2);geometries.push(geo);const mesh=new THREE.Mesh(geo,m);mesh.position.y=y;mesh.castShadow=true;mesh.receiveShadow=true;mesh.name=name;mesh.userData=meta;root.add(mesh);meshes.push(mesh);return mesh;}
 function windowOpening(x,width,bottom,height,g){const trim=materials.trim;box(width+3,2,4,x,bottom-1,0,trim,g);box(width+3,2,3,x,bottom+height+1,0,trim,g);for(let a of [-1,1])box(2,height,3,x+a*(width/2+1),bottom+height/2,0,trim,g);box(width,height,.4,x,bottom+height/2,-1,materials.sky,g);box(1.2,height,1,x,bottom+height/2,.5,trim,g);box(width,1.2,1,x,bottom+height*.48,.5,trim,g);box(width+3,1,6,x,bottom-1.4,1,materials.counter,g);}
 function buildModularTerracotta(){
-  const unit=8,gap=.18,nx=Math.ceil(W/unit),nz=Math.ceil(D/unit),used=Array.from({length:nz},()=>Array(nx).fill(false));
-  let seed=7331;const rnd=()=>{seed=(seed*48271)%2147483647;return seed/2147483647;};
-  const formats=[[3,2],[2,3],[2,2],[2,1],[1,2],[1,1]],palette=[materials.terra,materials.terra2,materials.terra3,materials.terra4];
-  // Existing kitchen tile terminates on a 45-degree diagonal at the dining-room side.
-  // The legacy plan shows an approximately 2'-0" by 2'-0" chamfer; the current client photo confirms the diagonal transition.
-  // This remains conceptual and must be field-verified before tile layout.
-  const diagRun=24,diagStart=D-diagRun;
-  function insideTileSide(x,z){return x>=diagRun||z<=diagStart+x;}
+  const L=window.MUSIE_FLOOR_LAYOUT;if(!L)return;
+  const diagRun=L.DIAGONAL,diagStart=L.DIAG_START,gap=L.GAP;
   function clipDiag(poly){
     const out=[];function f(p){return p.z-p.x-diagStart;}
-    for(let i=0;i<poly.length;i++){
-      const a=poly[i],b=poly[(i+1)%poly.length],fa=f(a),fb=f(b),ain=fa<=0,bin=fb<=0;
-      if(ain)out.push(a);
-      if(ain!==bin){const q=fa/(fa-fb);out.push({x:a.x+(b.x-a.x)*q,z:a.z+(b.z-a.z)*q});}
-    }
+    for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],fa=f(a),fb=f(b),ain=fa<=0,bin=fb<=0;if(ain)out.push(a);if(ain!==bin){const q=fa/(fa-fb);out.push({x:a.x+(b.x-a.x)*q,z:a.z+(b.z-a.z)*q});}}
     return out;
   }
   function floorPoly(poly,m,name,meta){
-    if(poly.length<3)return null;
-    const pos=[];for(let i=1;i<poly.length-1;i++)for(const pt of [poly[0],poly[i],poly[i+1]])pos.push(pt.x,.14,pt.z);
+    if(poly.length<3)return null;const pos=[];
+    for(let i=1;i<poly.length-1;i++)for(const pt of [poly[0],poly[i+1],poly[i]])pos.push(pt.x,.14,pt.z);
     const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.computeVertexNormals();geometries.push(geo);
     const mesh=new THREE.Mesh(geo,m);mesh.receiveShadow=true;mesh.name=name||'';if(meta){mesh.userData=meta;meshes.push(mesh);}root.add(mesh);return mesh;
   }
-  function cellAllowed(ix,iz){const xc=ix*unit+unit/2,zc=iz*unit+unit/2;return insideTileSide(xc,zc);}
-  function fits(cx,cz,tw,td){if(cx+tw>nx||cz+td>nz)return false;for(let z=cz;z<cz+td;z++)for(let x=cx;x<cx+tw;x++)if(used[z][x]||!cellAllowed(x,z))return false;return true;}
-  function mark(cx,cz,tw,td){for(let z=cz;z<cz+td;z++)for(let x=cx;x<cx+tw;x++)used[z][x]=true;}
-  // Retained hardwood / adjacent room beyond the diagonal makes the existing 45-degree edge visually explicit.
-  floorPoly([{x:0,z:diagStart},{x:0,z:D},{x:diagRun,z:D}],materials.floorWood,'Hardwood beyond 45° tile edge',{id:'Floor footprint',note:'Existing hardwood side of the 45° kitchen tile transition.'});
-  for(let cz=0;cz<nz;cz++)for(let cx=0;cx<nx;cx++){
-    if(used[cz][cx]||!cellAllowed(cx,cz))continue;
-    const first=Math.floor(rnd()*formats.length);let choice=[1,1];
-    for(let k=0;k<formats.length;k++){const f=formats[(first+k)%formats.length];if(fits(cx,cz,f[0],f[1])){choice=f;break;}}
-    const [tw,td]=choice;mark(cx,cz,tw,td);
-    const x0=cx*unit+gap/2,z0=cz*unit+gap/2,x1=Math.min(W,(cx+tw)*unit-gap/2),z1=Math.min(D,(cz+td)*unit-gap/2);
-    let poly=[{x:x0,z:z0},{x:x1,z:z0},{x:x1,z:z1},{x:x0,z:z1}];
-    if(x0<diagRun)poly=clipDiag(poly);
-    floorPoly(poly,palette[Math.floor(rnd()*palette.length)],'Valdorcia mixed-format tile',{id:'Floor footprint'});
+  for(const tile of L.tiles){
+    let x0=tile.x+gap/2,z0=tile.z+gap/2,x1=tile.x+tile.w-gap/2,z1=tile.z+tile.h-gap/2;
+    if(x1<=x0||z1<=z0)continue;
+    let poly=[{x:x0,z:z0},{x:x0,z:z1},{x:x1,z:z1},{x:x1,z:z0}];
+    if(poly.some(p=>p.x<diagRun))poly=clipDiag(poly);
+    const metadata={id:'Floor footprint',dimensions:tile.short+' nominal',source:'A.03 / Cerdomus Valdorcia',note:'Proposed repeat from the Centura display-board pattern. Tile cuts, ⅛-inch grout and start line are draft assumptions; verify field dimensions and carton mix before installation.'};
+    floorPoly(poly,materials[['terra','terra2','terra3','terra4'][tile.index]],'Valdorcia '+tile.size,metadata);
   }
-  // A narrow hardwood transition strip follows the true 45-degree line so the boundary is unmistakable in overview/top views.
-  const len=Math.sqrt(2)*diagRun,strip=box(len,.24,1.35,diagRun/2,.22,diagStart+diagRun/2,materials.wood,root,'45° hardwood transition',{id:'Floor footprint',note:'Existing 45° tile/hardwood transition. Model uses an approximately 24-inch by 24-inch chamfer based on the plan and current photo; verify exact field position before installation.'});
+  floorPoly([{x:0,z:diagStart},{x:0,z:D},{x:diagRun,z:D}],materials.floorWood,'Hardwood beyond 45° tile edge',{id:'Floor footprint',note:'A.03 room-plan diagonal is 24-inch nominal; field-check the transition endpoints.'});
+  const len=Math.sqrt(2)*diagRun,strip=box(len,.24,1.35,diagRun/2,.22,diagStart+diagRun/2,materials.wood,root,'45° hardwood transition',{id:'Floor footprint',note:'Approximate 24-inch chamfer from A.03; verify the exact field line.'});
   strip.rotation.y=-Math.PI/4;
   tag('45° TILE / HARDWOOD EDGE',diagRun*.58,3.2,diagStart+diagRun*.58);
 }
 function buildKitchenRunner(){const geo=new THREE.PlaneGeometry(84,30);geometries.push(geo);const rug=new THREE.Mesh(geo,materials.rug);rug.rotation.x=-Math.PI/2;rug.position.set(W/2,.12,D*.70);rug.receiveShadow=true;rug.name='Sundara 30 × 84 in runner preview';root.add(rug);}
 function rebuild(){CT=(Number(state.counterThickness)||2)/2.54;H=34.5+CT;const selectionToRestore=selected;if(outline){scene.remove(outline);outline.geometry.dispose();outline.material.dispose();outline=null;}root.traverse(o=>{if(o.isSprite)o.material.dispose();});root.clear();geometries.forEach(g=>g.dispose());geometries=[];Object.values(materials).forEach(m=>m.dispose());textures.forEach(t=>t.dispose());textures=[];meshes=[];tags=[];selected=null;
 const terraMap=surfaceTexture('tile'),terraBump=surfaceTexture('bump');materials={upper:finish(state.upper,state.upperColor),lower:finish(state.lower,state.lowerColor),interior:mat('#f6f4ec'),trim:mat('#f9f6ed'),wall:mat('#e6e1d6'),toe:mat('#b3aea1'),metal:mat(state.hardware==='brass'?'#b6934d':state.hardware==='black'?'#2a2d2a':'#a8afb1',{metalness:1,roughness:.24,envMapIntensity:1.5}),steel:mat('#adb2b3',{metalness:.78,roughness:.28}),black:mat('#202724',{roughness:.28}),glass:mat('#ffffff',{transparent:true,opacity:.23,roughness:.055,metalness:.05,ior:1.5,clearcoat:1,clearcoatRoughness:.04,envMapIntensity:1.5,depthWrite:false}),ceramic:mat('#fffaf0',{roughness:.19,clearcoat:.6,clearcoatRoughness:.08}),sky:mat('#c1d6cf',{emissive:'#b1d1cb',emissiveIntensity:.25}),counter:mat('#ffffff',{map:tex(state.counter),roughness:.2,clearcoat:.55,clearcoatRoughness:.18}),wood:mat('#ffffff',{map:tex('wood')}),rug:mat('#ffffff',{map:tex('rug'),roughness:.96}),appliance:mat(state.appliance==='white'?'#f3f1e9':'#aab0af',{metalness:state.appliance==='white'?.1:.7,roughness:.33}),terra:mat(state.floor==='terra'?'#b17a58':'#d5c9b1',{map:terraMap,bumpMap:terraBump,bumpScale:.05,roughness:.83}),terra2:mat('#a96f50',{map:terraMap,bumpMap:terraBump,bumpScale:.045,roughness:.84}),terra3:mat('#bc8662',{map:terraMap,bumpMap:terraBump,bumpScale:.05,roughness:.82}),terra4:mat('#9f684c',{map:terraMap,bumpMap:terraBump,bumpScale:.04,roughness:.86}),floorWood:mat('#ffffff',{map:tex('wood')}),grout:mat('#d8cdbb'),tile:mat('#eee9dd'),blue:mat('#5b8195')};
-const floorMeta={id:'Floor footprint',dimensions:'208⅛″ × 141¾″ envelope',source:'A.03, PDF p.4',note:'Concept envelope, not flooring quantity. The model now shows retained hardwood beyond the existing 45° diagonal tile edge plus a visible hardwood transition strip. Exact position and cuts must be verified in the field. Quoted flooring uses a separate 198⅛″ span plus waste.'};box(W,2,D,W/2,-1,D/2,materials.grout,root,'Floor',floorMeta);
+const floorMeta={id:'Floor footprint',dimensions:'208⅛″ × 141¾″ room envelope; tile field ≈203 sq ft',source:'A.03 / A.21',note:'3D floor uses the fixed Valdorcia mixed-size modular repeat shown in Plan → Floor tile (166 pieces; whole-tile area ≈238 sq ft). The room, grout, start line and cuts are drawing-based draft assumptions. Measure onsite and confirm VATECO carton contents before installation.'};box(W,2,D,W/2,-1,D/2,materials.grout,root,'Floor',floorMeta);
 if(state.floor==='wood'){for(let x=0;x<W;x+=6){let ww=Math.min(5.85,W-x);box(ww,.12,D,x+ww/2,.08,D/2,materials.floorWood);}}else if(state.floor==='terra'){buildModularTerracotta();if(state.showRug)buildKitchenRunner();}else{for(let x=0;x<W;x+=16)for(let z=0;z<D;z+=16){let w=Math.min(15.8,W-x),d=Math.min(15.8,D-z);box(w,.15,d,x+w/2,.1,z+d/2,materials.terra);}}
 // Sink wall shell with genuine opening rather than an opaque wall behind the window.
 wallGroup=new THREE.Group();wallGroup.name='Wall shell assumed offsets';root.add(wallGroup);wallGroup.visible=state.walls;const winW=33.125,wb=40.3125,wh=Number(state.windowHeight),ceil=Number(state.ceiling);let wl=SINK-winW/2,wr=SINK+winW/2;
