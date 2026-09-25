@@ -4,7 +4,7 @@ const views={
  sink:{title:'Sink wall · Ashley’s V.4 design',source:'Intentional Space · A.09',image:'assets/design/sink-a09.webp',mobile:'assets/design/sink-perspective-a09.webp',alt:'V.4 sink wall with cream lower cabinets, cherry glass uppers, apron sink, and existing white refrigerator'},
  range:{title:'Range wall · Ashley’s V.4 design',source:'Intentional Space · A.11',image:'assets/design/range-a11.webp',alt:'V.4 range wall perspective with plaster hood, blue patterned tile, cherry glass uppers and cream lowers'},
  peninsula:{title:'Peninsula · Ashley’s V.4 design',source:'Intentional Space · Kitchen v.4 cover perspective',image:'assets/design/peninsula-cover.webp',alt:'V.4 peninsula and adjoining sink wall perspective with cream and cherry cabinets'},
- plan:{title:'Cabinet plan · Ashley’s V.4 design',source:'Intentional Space · A.05',image:null,alt:'V.4 dimensioned cabinet plan'}
+ plan:{title:'Cabinet plan · Ashley’s V.4 design',source:'Intentional Space · A.05',image:'assets/design/plan-a05.webp',alt:'V.4 dimensioned cabinet plan'}
 };
 const active=()=>document.querySelector('.view-tabs [data-view].active')?.dataset.view||'sink';
 function render(){const v=views[active()]||views.sink;const src=v.image||(window.MUSIE_DRAWINGS||[])[0]?.src;
