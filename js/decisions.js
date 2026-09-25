@@ -44,17 +44,48 @@ function syncBudget(result){let data;try{data=JSON.parse($('budget-data').textCo
  $('header-priced-bar').style.width=fill+'%';$('header-priced-bar').closest('.status-meter').setAttribute('aria-valuenow',String(fill));
  $('header-priced-bar').classList.toggle('over',total>ceiling);
 }
+function csvCell(value){let text=String(value??'');if(/^[\s\uFEFF]*[=+\-@]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';}
+function parseCSV(text){
+ text=String(text||'').replace(/^\uFEFF/,'');const rows=[];let row=[],field='',quoted=false;
+ for(let i=0;i<text.length;i++){const ch=text[i];
+  if(quoted){if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}else if(ch==='"')quoted=false;else field+=ch;}
+  else if(ch==='"'&&field==='')quoted=true;
+  else if(ch===','){row.push(field.replace(/\r$/,''));field='';}
+  else if(ch==='\n'){row.push(field.replace(/\r$/,''));field='';if(row.some(v=>v!==''))rows.push(row);row=[];}
+  else field+=ch;
+ }
+ if(quoted)throw Error('CSV has an unmatched quotation mark.');
+ if(field!==''||row.length){row.push(field.replace(/\r$/,''));if(row.some(v=>v!==''))rows.push(row);}
+ return rows;
+}
 $('export-decisions').addEventListener('click',()=>{
- const blob=new Blob([JSON.stringify({type:'musie-project-decisions',version:1,records},null,2)],{type:'application/json'});
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Musie-decision-record.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),30000);
+ const rows=[['id','title','status','note','recorded_at']];
+ cards.forEach((card,i)=>{const id=ids[i];if(fixedStatus(card))return;const record=records[id];rows.push([id,card.querySelector('.decision-heading strong').textContent,record?.resolved?'Recorded':'Open',record?.note||'',record?.date||'']);});
+ const csv='\uFEFF'+rows.map(row=>row.map(csvCell).join(',')).join('\r\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download='Musie-decision-record.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),30000);
 });
 $('import-decisions').addEventListener('click',()=>$('decisions-file').click());
 $('decisions-file').addEventListener('change',async e=>{
  const file=e.target.files?.[0];if(!file)return;
- try{const parsed=JSON.parse(await file.text());if(parsed.type!=='musie-project-decisions'||parsed.version!==1||!parsed.records||typeof parsed.records!=='object'||Array.isArray(parsed.records))throw Error('Invalid decision record');
-  const next={};for(const id of ids){const r=parsed.records[id];if(r?.resolved===true&&typeof r.note==='string'&&typeof r.date==='string'&&!Number.isNaN(Date.parse(r.date)))next[id]={resolved:true,note:r.note.slice(0,500),date:r.date};}
-  records=next;localStorage.setItem(key,JSON.stringify(records));redraw();$('status').textContent='Decision record imported.';
- }catch{$('status').textContent='Could not import that decision record.';}finally{e.target.value='';}
+ try{
+  const table=parseCSV(await file.text());if(!table.length)throw Error('CSV is empty.');
+  const header=table.shift().map(v=>v.trim().toLowerCase()),required=['id','title','status','note','recorded_at'];
+  if(required.some((name,i)=>header[i]!==name))throw Error('CSV columns do not match the decision-record format.');
+  const next={},seen=new Set();
+  for(const row of table){
+   if(row.length!==required.length)throw Error('A CSV row has the wrong number of columns.');
+   const [id,title,status,note,date]=row;
+   if(!ids.includes(id)||seen.has(id))throw Error('CSV contains an unknown or duplicate decision.');
+   seen.add(id);const card=cards[ids.indexOf(id)];
+   if(fixedStatus(card)||title!==card.querySelector('.decision-heading strong').textContent)throw Error('A decision name does not match this project.');
+   if(status==='Recorded'){
+    if(note.length>500||!date||Number.isNaN(Date.parse(date)))throw Error('A recorded decision needs a note of 500 characters or fewer and a valid date.');
+    next[id]={resolved:true,note,date};
+   }else if(status!=='Open'||note||date)throw Error('An open decision must not contain a note or recorded date.');
+  }
+  records=next;localStorage.setItem(key,JSON.stringify(records));redraw();$('status').textContent='CSV decision record imported.';
+ }catch(err){$('status').textContent='Could not import that CSV decision record: '+err.message;}
+ finally{e.target.value='';}
 });
 redraw();syncBudget();window.addEventListener('musie:budgetdraw',e=>syncBudget(e.detail?.result));
 })();
