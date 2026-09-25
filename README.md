@@ -1,10 +1,7 @@
 # Kitchen Studio
 
-Mobile-friendly concept model for comparing the kitchen material palette.
+Static GitHub Pages app for the kitchen design. `index.html` is the entry point; the current V.4 cabinet box schedule is in `data/cabinets.js`. `css/studio.css` and `js/` contain the existing interactive runtime and integrations. No build step is required.
 
-- Public-safe: no home address, personal names, email addresses or project budget.
-- Countertop toggle: Calacatta Prado / Eternal Musq.
-- Mixed-format Valdorcia terracotta floor with the 45-degree hardwood transition represented.
-- Touch orbit controls for phone and tablet use.
+The drawing PDF and current budget remain the purchasing authority. The elevation and main 3D cabinet builder share V.4 box widths, heights and wall positions; depths, clearances and the corner remain visual approximations. Decisions, working edits and concepts persist in browser storage and can be exported. The published site includes personal project details and prices.
 
-GitHub Pages deploys from the repository root through the included workflow.
+To preview locally, run `python3 -m http.server 8000` in this directory and open `http://localhost:8000/`.
