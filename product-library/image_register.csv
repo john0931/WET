@@ -1,0 +1,58 @@
+﻿image_id,image_file,source_page,page_reference,dimensions_px,source_format,source_xref,transparency_mask_xref,mask_file,pages_appearing_on,associated_product_or_page_section
+IMG-001,images/img_001_p01_xref22.png,1,Cover / project overview,781 × 172,png,22,29,transparency_masks/mask_xref29.png,1,Cover / project overview
+IMG-002,images/img_002_p01_xref23.png,1,Cover / project overview,2664 × 2144,png,23,30,transparency_masks/mask_xref30.png,1,Cover / project overview
+IMG-003,images/img_003_p01_xref24.png,1,Cover / project overview,1707 × 1193,png,24,31,transparency_masks/mask_xref31.png,1,Cover / project overview
+IMG-004,images/img_004_p01_xref25.png,1,Cover / project overview,2113 × 1277,png,25,32,transparency_masks/mask_xref32.png,1,Cover / project overview
+IMG-005,images/img_005_p01_xref26.png,1,Cover / project overview,1578 × 1050,png,26,,,1; 12,Cover / project overview; A.11 Range-wall elevation
+IMG-006,images/img_006_p01_xref27.png,1,Cover / project overview,1576 × 1050,png,27,,,1,Cover / project overview
+IMG-007,images/img_007_p02_xref47.png,2,A.01 Current-space photographs,498 × 494,png,47,,,2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12; 13; 14; 15; 16; 17; 18; 19; 20; 21; 22; 23,A.01 Current-space photographs; A.02 Current-spec plan; A.03 Plan-view specifications; A.04 Electrical plan; A.05 Cabinet layout plan; A.06 Cabinet specifications; A.07 Cabinet details and hardware; A.08 Countertop and backsplash specifications; A.09 Sink-wall elevation; A.10 Sink-wall elevation specifications; A.11 Range-wall elevation; A.12 Range-wall elevation specifications; A.13 Peninsula kitchen-side elevation; A.14 Peninsula kitchen-side specifications; A.15 Peninsula dining-side elevation; A.16 Peninsula dining-side specifications; A.17 Cabinet-front options; A.18 Cabinet-front options; A.19 Cabinet-front options; A.20 Product sourcing; A.21 Product sourcing; A.22 Product sourcing
+IMG-008,images/img_008_p02_xref48.png,2,A.01 Current-space photographs,3588 × 1924,png,48,51,transparency_masks/mask_xref51.png,2,A.01 Current-space photographs
+IMG-009,images/img_009_p03_xref67.png,3,A.02 Current-spec plan,2089 × 4104,png,67,68,transparency_masks/mask_xref68.png,3,A.02 Current-spec plan
+IMG-010,images/img_010_p04_xref85.png,4,A.03 Plan-view specifications,2317 × 4104,png,85,87,transparency_masks/mask_xref87.png,4,A.03 Plan-view specifications
+IMG-011,images/img_011_p04_xref86.png,4,A.03 Plan-view specifications,2632 × 1430,png,86,88,transparency_masks/mask_xref88.png,4,A.03 Plan-view specifications
+IMG-012,images/img_012_p05_xref106.png,5,A.04 Electrical plan,2047 × 3308,png,106,109,transparency_masks/mask_xref109.png,5,A.04 Electrical plan
+IMG-013,images/img_013_p05_xref107.png,5,A.04 Electrical plan,776 × 1190,png,107,,,5,A.04 Electrical plan
+IMG-014,images/img_014_p05_xref108.png,5,A.04 Electrical plan,682 × 632,png,108,,,5,A.04 Electrical plan
+IMG-015,images/img_015_p06_xref124.png,6,A.05 Cabinet layout plan,2929 × 4068,png,124,125,transparency_masks/mask_xref125.png,6,A.05 Cabinet layout plan
+IMG-016,images/img_016_p07_xref139.png,7,A.06 Cabinet specifications,2962 × 4105,png,139,140,transparency_masks/mask_xref140.png,7,A.06 Cabinet specifications
+IMG-017,images/img_017_p08_xref160.png,8,A.07 Cabinet details and hardware,2595 × 947,png,160,165,transparency_masks/mask_xref165.png,8,A.07 Cabinet details and hardware
+IMG-018,images/img_018_p08_xref161.png,8,A.07 Cabinet details and hardware,1734 × 1162,png,161,166,transparency_masks/mask_xref166.png,8,A.07 Cabinet details and hardware
+IMG-019,images/img_019_p08_xref162.png,8,A.07 Cabinet details and hardware,1513 × 1043,png,162,167,transparency_masks/mask_xref167.png,8,A.07 Cabinet details and hardware
+IMG-020,images/img_020_p08_xref163.png,8,A.07 Cabinet details and hardware,1509 × 969,png,163,168,transparency_masks/mask_xref168.png,8,A.07 Cabinet details and hardware
+IMG-021,images/img_021_p08_xref164.png,8,A.07 Cabinet details and hardware,1096 × 634,png,164,169,transparency_masks/mask_xref169.png,8; 21,Cabinet hardware detail / product image (also appears on A.07)
+IMG-022,images/img_022_p09_xref190.png,9,A.08 Countertop and backsplash specifications,1986 × 2229,png,190,194,transparency_masks/mask_xref194.png,9,A.08 Countertop and backsplash specifications
+IMG-023,images/img_023_p09_xref191.png,9,A.08 Countertop and backsplash specifications,2781 × 1291,png,191,195,transparency_masks/mask_xref195.png,9,A.08 Countertop and backsplash specifications
+IMG-024,images/img_024_p09_xref192.png,9,A.08 Countertop and backsplash specifications,2404 × 1070,png,192,196,transparency_masks/mask_xref196.png,9,A.08 Countertop and backsplash specifications
+IMG-025,images/img_025_p09_xref193.png,9,A.08 Countertop and backsplash specifications,1312 × 918,png,193,197,transparency_masks/mask_xref197.png,9,A.08 Countertop and backsplash specifications
+IMG-026,images/img_026_p10_xref221.png,10,A.09 Sink-wall elevation,4112 × 1298,png,221,227,transparency_masks/mask_xref227.png,10,A.09 Sink-wall elevation
+IMG-027,images/img_027_p10_xref222.png,10,A.09 Sink-wall elevation,2394 × 1239,png,222,228,transparency_masks/mask_xref228.png,10,A.09 Sink-wall elevation
+IMG-028,images/img_028_p10_xref223.png,10,A.09 Sink-wall elevation,1360 × 1252,png,223,229,transparency_masks/mask_xref229.png,10,A.09 Sink-wall elevation
+IMG-029,images/img_029_p10_xref224.png,10,A.09 Sink-wall elevation,2096 × 1336,png,224,230,transparency_masks/mask_xref230.png,10,A.09 Sink-wall elevation
+IMG-030,images/img_030_p10_xref225.png,10,A.09 Sink-wall elevation,864 × 888,png,225,231,transparency_masks/mask_xref231.png,10,A.09 Sink-wall elevation
+IMG-031,images/img_031_p10_xref226.png,10,A.09 Sink-wall elevation,2092 × 864,png,226,232,transparency_masks/mask_xref232.png,10,A.09 Sink-wall elevation
+IMG-032,images/img_032_p11_xref247.png,11,A.10 Sink-wall elevation specifications,4253 × 1899,png,247,248,transparency_masks/mask_xref248.png,11,A.10 Sink-wall elevation specifications
+IMG-033,images/img_033_p12_xref264.png,12,A.11 Range-wall elevation,3851 × 2397,png,264,265,transparency_masks/mask_xref265.png,12,A.11 Range-wall elevation
+IMG-034,images/img_034_p13_xref282.png,13,A.12 Range-wall elevation specifications,3866 × 2127,png,282,284,transparency_masks/mask_xref284.png,13,A.12 Range-wall elevation specifications
+IMG-035,images/img_035_p13_xref283.png,13,A.12 Range-wall elevation specifications,4254 × 2509,png,283,285,transparency_masks/mask_xref285.png,13,A.12 Range-wall elevation specifications
+IMG-036,images/img_036_p14_xref301.png,14,A.13 Peninsula kitchen-side elevation,3010 × 1978,png,301,303,transparency_masks/mask_xref303.png,14,A.13 Peninsula kitchen-side elevation
+IMG-037,images/img_037_p14_xref302.png,14,A.13 Peninsula kitchen-side elevation,1836 × 1448,png,302,304,transparency_masks/mask_xref304.png,14,A.13 Peninsula kitchen-side elevation
+IMG-038,images/img_038_p15_xref319.png,15,A.14 Peninsula kitchen-side specifications,3122 × 1895,png,319,320,transparency_masks/mask_xref320.png,15,A.14 Peninsula kitchen-side specifications
+IMG-039,images/img_039_p16_xref336.png,16,A.15 Peninsula dining-side elevation,2989 × 1845,png,336,338,transparency_masks/mask_xref338.png,16,A.15 Peninsula dining-side elevation
+IMG-040,images/img_040_p16_xref337.png,16,A.15 Peninsula dining-side elevation,2200 × 1285,png,337,339,transparency_masks/mask_xref339.png,16,A.15 Peninsula dining-side elevation
+IMG-041,images/img_041_p17_xref355.png,17,A.16 Peninsula dining-side specifications,2969 × 1926,png,355,356,transparency_masks/mask_xref356.png,17,A.16 Peninsula dining-side specifications
+IMG-042,images/img_042_p18_xref366.png,18,A.17 Cabinet-front options,2098 × 1208,png,366,,,18,A.17 Cabinet-front options
+IMG-043,images/img_043_p19_xref376.png,19,A.18 Cabinet-front options,2090 × 1212,png,376,,,19,A.18 Cabinet-front options
+IMG-044,images/img_044_p20_xref386.png,20,A.19 Cabinet-front options,2124 × 1096,png,386,,,20,A.19 Cabinet-front options
+IMG-045,images/img_045_p21_xref426.png,21,A.20 Product sourcing,1892 × 1094,png,426,,,21,Quartz countertop sample images
+IMG-046,images/img_046_p21_xref427.png,21,A.20 Product sourcing,562 × 988,png,427,,,21,Drinking / reverse-osmosis faucet option image
+IMG-047,images/img_047_p21_xref428.png,21,A.20 Product sourcing,620 × 986,png,428,,,21,Main kitchen faucet option image
+IMG-048,images/img_048_p21_xref429.png,21,A.20 Product sourcing,3090 × 1432,png,429,433,transparency_masks/mask_xref433.png,21,Apron-sink options composite
+IMG-049,images/img_049_p21_xref430.png,21,A.20 Product sourcing,2404 × 1070,png,430,434,transparency_masks/mask_xref434.png,21,Quartz countertop sample images
+IMG-050,images/img_050_p21_xref431.png,21,A.20 Product sourcing,1796 × 644,png,431,435,transparency_masks/mask_xref435.png,21,Kitchen area rug image
+IMG-051,images/img_051_p21_xref432.png,21,A.20 Product sourcing,1442 × 440,png,432,436,transparency_masks/mask_xref436.png,21,Cabinet hardware product image
+IMG-052,images/img_052_p22_xref468.png,22,A.21 Product sourcing,2730 × 960,png,468,471,transparency_masks/mask_xref471.png,22,Sink pendant options composite
+IMG-053,images/img_053_p22_xref469.png,22,A.21 Product sourcing,1930 × 1194,png,469,472,transparency_masks/mask_xref472.png,22,Terracotta floor-tile option image
+IMG-054,images/img_054_p22_xref470.png,22,A.21 Product sourcing,2810 × 956,png,470,473,transparency_masks/mask_xref473.png,22,Backsplash tile options composite
+IMG-055,images/img_055_p23_xref495.png,23,A.22 Product sourcing,1502 × 1252,png,495,498,transparency_masks/mask_xref498.png,23,Counter-depth refrigerator / freezer alternatives composite
+IMG-056,images/img_056_p23_xref496.png,23,A.22 Product sourcing,1998 × 1260,png,496,499,transparency_masks/mask_xref499.png,23,Induction range alternatives composite
+IMG-057,images/img_057_p23_xref497.png,23,A.22 Product sourcing,928 × 550,png,497,,,23,Recirculating hood insert image

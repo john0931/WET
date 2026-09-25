@@ -5,3 +5,5 @@ Static GitHub Pages app for the kitchen design. `index.html` is the entry point;
 The drawing PDF and current budget remain the purchasing authority. The elevation and main 3D cabinet builder share V.4 box widths, heights and wall positions; depths, clearances and the corner remain visual approximations. Decisions, working edits and concepts persist in browser storage and can be exported. The published site includes personal project details and prices.
 
 To preview locally, run `python3 -m http.server 8000` in this directory and open `http://localhost:8000/`.
+
+The Products tab uses curated links and higher-resolution previews from `product-library/`. The full phone-friendly source index, 57 WebP previews, link CSV and audit note are available in that folder; the archive retains the original extracted PNGs and source URLs.

@@ -1,0 +1,16 @@
+window.MUSIE_SOURCE_IMAGES=Object.assign({},window.MUSIE_SOURCE_IMAGES,{
+  faucet:'product-library/thumbnails_hd/img_047_p21_xref428.webp',
+  drinking_faucet:'product-library/thumbnails_hd/img_046_p21_xref427.webp',
+  sink_options:'product-library/thumbnails_hd/img_048_p21_xref429.webp',
+  hardware_handles:'product-library/thumbnails_hd/img_021_p08_xref164.webp',
+  hardware_knobs:'product-library/thumbnails_hd/img_051_p21_xref432.webp',
+  counter_prado:'product-library/thumbnails_hd/img_045_p21_xref426.webp',
+  counter_onyx:'product-library/thumbnails_hd/img_049_p21_xref430.webp',
+  rug_sundara:'product-library/thumbnails_hd/img_050_p21_xref431.webp',
+  pendants:'product-library/thumbnails_hd/img_052_p22_xref468.webp',
+  floor_board:'product-library/thumbnails_hd/img_053_p22_xref469.webp',
+  backsplash_board:'product-library/thumbnails_hd/img_054_p22_xref470.webp',
+  range_options:'product-library/thumbnails_hd/img_056_p23_xref496.webp',
+  fridge_options:'product-library/thumbnails_hd/img_055_p23_xref495.webp',
+  hood_insert:'product-library/thumbnails_hd/img_057_p23_xref497.webp'
+});

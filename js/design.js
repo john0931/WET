@@ -19,5 +19,5 @@ $('design-dimensions').addEventListener('click',()=>window.MUSIE_ELEVATION?.open
 $('design-3d').addEventListener('click',()=>document.querySelector('.view-tabs [data-view="overview"]').click());
 document.querySelector('.view-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b)return;requestAnimationFrame(()=>b.dataset.view==='overview'?close():open());});
 window.MUSIE_DESIGN={open,close};
-open();
+document.querySelector('.view-tabs [data-view="overview"]').click();
 })();
