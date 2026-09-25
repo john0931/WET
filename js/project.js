@@ -33,7 +33,7 @@ const orders=[
  ['Swedish Door fronts + hood cover','Paid Sep 16–18 · production noted Sep 25','6–10 wk (typ.); rough arrival late Oct–late Nov, unconfirmed. Reserve Ty only from confirmed ship/delivery date.','Cabinet install','Paid'],
  ['Centura Valdorcia kitchen tile','Paid Sep 24 · order 6058089','Ashley expects mid-November; tentative, call for update','Floor','Paid'],
  ['OGP quartz + backsplash X','Deposit paid Sep 24 · $3,100','1–2 wk after template (typ.); slab / balance to confirm','Counters','Deposit paid'],
- ['IKEA SEKTION boxes / drawers','Planned for October · list 499998627','Stock / 1–2 wk (typ.); recheck price and availability','Cabinet install','To order'],
+ ['IKEA SEKTION boxes / drawers','Plan to buy during the IKEA Kitchen Event · list 499998627','Event starts Oct 1; October reward terms are not posted yet. Reconcile the list and confirm eligibility before checkout.','Cabinet install','To order'],
  ['Cabinet hardware','Quote expired Sep 24 · QT00184447','Re-quote quantities and verify stock / tariff','Cabinet install','Re-quote'],
  ['Sink pendant · Dunbridge','Quote expired Sep 24 · D5279','Refresh stock and lead time','Electrical finish','Re-quote'],
  ['Apron sink + RO fit','Not selected · Turner / DeerValley finalists','Supplier lead time not confirmed','Counter template','Decide'],
