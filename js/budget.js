@@ -4,13 +4,14 @@ const $=id=>document.getElementById(id), s=MUSIE.state;
 const clone=v=>JSON.parse(JSON.stringify(v));
 const initial=JSON.parse($('budget-data').textContent);
 const previousQuoteNotes={"15":"Sep. 22 IKEA list is $3,830 pre-tax. Hold for the October purchase window, but reconcile before ordering: V4 CAB-8 calls for a hidden inner drawer not apparent in the 18-inch components, and the list still includes one $66 36x30 wall cabinet that may be the hood cabinet earlier identified for removal.","16":"Kitchen only: 31 cartons / 240.25 sq.ft. mixed-format Valdorcia, installed in the selected modular pattern. The concept model also reflects the existing 45° diagonal edge where the current tile ends. The old $4,387.28 Centura request is correct for the combined kitchen + deferred basement order, not the current scope. Kitchen-only working total is about $2,533.93 tax-in.","19":"Existing quote total only. V4 requires 8 x 128mm pulls, 11 x 192mm pulls and 16 knobs; prior quote quantities differ and must be corrected.","20":"Dunbridge 14-inch pendant quote. Refresh price/stock before purchase.","21":"OGP price match: Eternal Musq 2cm $5,936 + $310 backsplash X + HST = about $7,057.98 tax-in; Calacatta Prado 2cm $6,193.50 + $310 + HST = about $7,348.96 tax-in. Prado premium is about $290.98 tax-in. Material/vendor not selected."};
+const previousDepositNote="Ottawa Granite Pro Sep. 22 price match: Eternal Musq 2cm $5,936 + $310 backsplash X + HST = $7,057.98; Calacatta Prado 2cm $6,193.50 + $310 + HST = $7,348.96. Adèle reported OGP paid Sep. 24; amount, material and deposit/final status are not established by that message. Reconcile receipt before replacing the scenario baseline. Quote valid 30 days, subject to site measure; plumbing hookup and removal of old counters excluded.";
 const canonical=initial.rows.map(r=>({row:r.row,name:r.name,keys:[...r.keys]}));
 const knownRows=new Set(canonical.map(r=>String(r.row)));
-const baseline={upper:'cherry',lower:'cream',upperColor:'#985f36',lowerColor:'#eadfc2',glass:'v3',mullions:true,hardware:'brass',counterThickness:'2',showRug:false,floor:'terra',tile:'blue',counter:'musq',appliance:'steel',cabinetOverrides:{},featureOverrides:{}};
+const baseline={upper:'cherry',lower:'cream',upperColor:'#985f36',lowerColor:'#eadfc2',glass:'v3',mullions:true,hardware:'brass',counterThickness:'2',showRug:false,floor:'terra',tile:'blue',counter:'prado',appliance:'steel',cabinetOverrides:{},featureOverrides:{}};
 const cabinetIds=Array.from({length:16},(_,i)=>'CAB-'+(i+1)).concat('CAB-18');
 const upperIds=new Set(['CAB-11','CAB-12','CAB-13','CAB-14','CAB-16','CAB-18']);
 const v2Ids=new Set(['CAB-11','CAB-16','CAB-18']);
-let data=clone(initial), overrides={}, source='Executive Summary baseline updated 23 September 2026. Excel remains the cost master; several labour/services remain unpriced.';
+let data=clone(initial), overrides={}, source='Working quote baseline reconciled 25 September 2026. Prado selected with a $3,100 deposit; Excel remains the cost master.';
 const money=n=>new Intl.NumberFormat('en-CA',{style:'currency',currency:'CAD'}).format(n);
 const plain=v=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&(Object.getPrototypeOf(v)===Object.prototype||Object.getPrototypeOf(v)===null);
 const safeNumber=(v,max=1e9)=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=max;
@@ -39,7 +40,7 @@ function changed(r){return signature(r)!==signature(r,baseline);}
 function activeOverride(r){const o=overrides[String(r.row)];return o&&o.signature===signature(r)?o:null;}
 function knownCounterCost(r){if(r.row!==21)return null;if(s.counter==='musq')return r.amount;if(s.counter==='prado')return 7348.96;return null;}
 function cost(r){const o=activeOverride(r);if(o)return o.amount;const kc=knownCounterCost(r);if(kc!==null)return kc;return changed(r)?null:r.amount;}
-function decoratedRows(){return data.rows.map(r=>({...clone(r),cost:cost(r),changed:changed(r),hasReplacement:!!activeOverride(r),signature:signature(r),basis:activeOverride(r)?'Owner scenario replacement — not an approved commitment':r.row===21&&s.counter==='prado'?'Known OGP price-match alternative — Prado + backsplash X':r.row===21&&s.counter==='musq'?'OGP Musq price-match planning reference + backsplash X':changed(r)?'Changed concept — replacement quote needed':'Excel carry-forward — provisional',hasStaleReplacement:!!overrides[String(r.row)]&&!activeOverride(r)}));}
+function decoratedRows(){return data.rows.map(r=>({...clone(r),cost:cost(r),changed:changed(r),hasReplacement:!!activeOverride(r),signature:signature(r),basis:activeOverride(r)?'Owner scenario replacement — not an approved commitment':r.row===21&&s.counter==='prado'?'Selected OGP Prado quote, including $3,100 deposit — final balance to reconcile':r.row===21&&s.counter==='musq'?'Musq concept comparison only — OGP deposit is on selected Prado':changed(r)?'Changed concept — replacement quote needed':'Excel carry-forward — provisional',hasStaleReplacement:!!overrides[String(r.row)]&&!activeOverride(r)}));}
 function result(){
   let priced=0,missing=0;
   data.rows.forEach(r=>{const n=cost(r);if(n===null)missing++;else priced+=n;});
@@ -98,7 +99,7 @@ function validateState(snapshot){
     const c=canonical[i];
     if(!plain(r)||r.row!==c.row||r.name!==c.name||!(r.amount===null||safeNumber(r.amount))||typeof r.note!=='string'||r.note.length>10000)throw Error('Budget snapshot cost row '+c.row+' is invalid.');
     if(!Array.isArray(r.keys)||JSON.stringify(r.keys)!==JSON.stringify(c.keys))throw Error('Budget snapshot pricing rules were modified at row '+c.row+'.');
-    const refresh=!String(snapshot.source||'').startsWith('Loaded ')&&r.note===previousQuoteNotes[c.row];
+    const refresh=!String(snapshot.source||'').startsWith('Loaded ')&&(r.note===previousQuoteNotes[c.row]||c.row===21&&r.note===previousDepositNote);
     if(refresh)quoteNotesRefreshed=true;
     return {row:c.row,name:c.name,amount:r.amount,note:refresh?initial.rows[i].note:r.note,keys:[...c.keys]};
   });
@@ -110,7 +111,7 @@ function validateState(snapshot){
     if(!Array.isArray(sig))throw Error('Budget replacement design reference is invalid.');
     cleanOverrides[key]={amount:o.amount,signature:o.signature};
   }
-  const nextSource=quoteNotesRefreshed?'Working baseline from 23 September Executive Summary; quote notes reconciled 25 September 2026. Excel remains the cost master.':snapshot.source===undefined?'Saved concept budget. No automatic synchronization.':snapshot.source;
+  const nextSource=quoteNotesRefreshed?'Working quote baseline reconciled 25 September 2026. Prado selected with a $3,100 deposit; Excel remains the cost master.':snapshot.source===undefined?'Saved concept budget. No automatic synchronization.':snapshot.source;
   if(typeof nextSource!=='string'||nextSource.length>2000)throw Error('Budget source is invalid.');
   return {version:1,data:{ceiling:d.ceiling,reserveRate:d.reserveRate,rows},overrides:cleanOverrides,source:nextSource};
 }
