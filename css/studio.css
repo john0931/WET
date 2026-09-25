@@ -99,27 +99,12 @@ button,select,input,summary{-webkit-tap-highlight-color:transparent}
 .design-stage-actions button{min-height:44px;font-size:11px;background:white}
 .design-stage-actions #design-dimensions{background:#315e4b;color:white;border-color:#315e4b}
 .design-image-wrap{display:grid;place-items:center;min-height:0;min-width:0;overflow:hidden;background:#fff;border:1px solid #deddd5;border-radius:8px}
-.design-image-wrap picture{display:grid;place-items:center;width:100%;height:100%;min-height:0;min-width:0}
-.design-image-wrap img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.design-image-wrap picture{position:relative;display:block;width:100%;height:100%;min-height:0;min-width:0}
+.design-image-wrap img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center}
 .design-caption{font-size:11px;line-height:1.35;color:#536354;margin:0}
 @media(max-width:700px){.design-stage{padding:7px;gap:5px}.design-stage-head strong{font-size:11px}.design-stage-head span{font-size:9px}.design-stage-actions{gap:4px}.design-stage-actions button{min-height:44px;padding:5px;font-size:10px}.design-caption{font-size:9px;line-height:1.25}}
 
-/* Reference art retains its source aspect ratio; the dialog provides a legible inspection view. */
-.source-drawing-actions{display:flex;gap:6px;flex:none}
-.source-drawing-actions button{min-height:44px}
+/* Each source drawing fits the image area without cropping or distortion. */
+.source-drawing>img{flex:1 1 0;height:0;min-height:0;object-fit:contain}
 .reference-images img{object-fit:contain;background:#f3f1ec}
-#image-dialog{width:min(96vw,1800px);height:min(94dvh,1200px);max-width:none;max-height:none;padding:0;border:1px solid #c9d1c6;border-radius:12px;background:#fbfaf6;color:#263b35;box-shadow:0 18px 70px #10251955}
-#image-dialog::backdrop{background:#14241dcc}
-.image-dialog-shell{height:100%;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr)}
-.image-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #dae0d5}
-.image-dialog-head strong{font-size:13px}
-.image-dialog-actions{display:flex;align-items:center;gap:5px}
-.image-dialog-actions button{min-width:44px;min-height:44px}
-#image-zoom-level{min-width:42px;text-align:center;font-size:11px;font-weight:700}
-.image-dialog-frame{min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;padding:10px;background:#e9e7df}
-.image-dialog-frame img{display:block;max-width:none;max-height:none;height:auto;margin:auto;background:white;box-shadow:0 1px 8px #2c3b3024}
-@media(max-width:700px){.image-dialog-head{align-items:flex-start;flex-direction:column;padding:5px 8px}.image-dialog-actions{width:100%}.image-dialog-actions button{flex:1;padding:4px}.image-dialog-actions output{flex:none}.source-drawing-actions button{min-height:44px}}
-
-.design-image-wrap{position:relative}
-.design-enlarge{position:absolute;right:10px;bottom:10px;z-index:2;min-height:44px;background:#fffefbe8;box-shadow:0 1px 8px #22342730}
-@media(max-width:700px){.design-enlarge{right:5px;bottom:5px;padding:6px 8px;font-size:10px}}
+@media(max-width:700px) and (orientation:portrait){body:has(#design-stage:not([hidden])) .workspace{grid-template-rows:58% minmax(0,1fr)}}
