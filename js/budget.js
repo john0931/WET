@@ -11,7 +11,7 @@ const baseline={upper:'cherry',lower:'cream',upperColor:'#985f36',lowerColor:'#e
 const cabinetIds=Array.from({length:16},(_,i)=>'CAB-'+(i+1)).concat('CAB-18');
 const upperIds=new Set(['CAB-11','CAB-12','CAB-13','CAB-14','CAB-16','CAB-18']);
 const v2Ids=new Set(['CAB-11','CAB-16','CAB-18']);
-let data=clone(initial), overrides={}, source='Working quote baseline reconciled 25 September 2026. Prado selected with a $3,100 deposit; Excel remains the cost master.';
+let data=clone(initial), overrides={}, source='Working quote baseline reconciled 25 September 2026. Swedish Door receipts verify 3 approved payments of $7,633.84 dated Sep. 16–18 ($22,901.52 total) against $22,901.53 in combined quoted lines; reconcile the $0.01 rounding difference to the final invoice/ledger. Prado selected with a $3,100 deposit; Excel remains the cost master.';
 const money=n=>new Intl.NumberFormat('en-CA',{style:'currency',currency:'CAD'}).format(n);
 const plain=v=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&(Object.getPrototypeOf(v)===Object.prototype||Object.getPrototypeOf(v)===null);
 const safeNumber=(v,max=1e9)=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=max;
