@@ -108,3 +108,39 @@ button,select,input,summary{-webkit-tap-highlight-color:transparent}
 .source-drawing>img{flex:1 1 0;height:0;min-height:0;object-fit:contain}
 .reference-images img{object-fit:contain;background:#f3f1ec}
 @media(max-width:700px) and (orientation:portrait){body:has(#design-stage:not([hidden])) .workspace{grid-template-rows:58% minmax(0,1fr)}}
+
+/* Phone layout: keep the view controls in their own rows and prevent page-wide overflow. */
+@media(max-width:700px){
+  html,body{width:100%;overflow-x:hidden}
+  .app-header,.status-strip,.workspace,.app-status{width:100%;max-width:none}
+  .status-strip{height:38px;min-width:0;padding:2px 9px;gap:5px;overflow:hidden}
+  .status-price{flex:1 1 auto;min-width:0;gap:6px;overflow:hidden;white-space:nowrap}
+  .status-label{font-size:8px;white-space:nowrap}
+  .status-price>strong{font-size:11px;flex:none}
+  .status-meter{display:none}
+  .status-price small{display:none}
+  .status-checks{flex:none;max-width:45%;gap:5px;padding:2px 7px;white-space:nowrap}
+  .status-checks span{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .workspace{height:calc(100dvh - 120px - var(--safe-top));grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(230px,50%) minmax(0,1fr);min-width:0}
+  .viewer{min-width:0;min-height:0;overflow:hidden;grid-template-rows:auto minmax(0,1fr) auto}
+  .viewbar{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;min-width:0;min-height:0}
+  .view-tabs{width:100%;max-width:100%;min-width:0;overflow-x:auto;flex-wrap:nowrap;gap:4px;padding:2px 0}
+  .view-tabs button{flex:0 0 auto;min-width:72px;min-height:40px;padding:6px 9px;font-size:10px}
+  .view-tools{width:100%;max-width:100%;min-width:0;overflow-x:auto;justify-content:flex-start;gap:5px;scrollbar-width:none}
+  .view-tools::-webkit-scrollbar{display:none}
+  .view-tools .view-count{display:none}
+  .view-tools #source-ref-toggle,.view-tools #elevation-toggle{flex:0 0 auto;min-height:36px;padding:5px 8px;font-size:10px}
+  #stage{width:100%;min-width:0;min-height:0}
+  .viewer-tools{width:100%;max-width:100%;min-width:0;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;scrollbar-width:none}
+  .viewer-tools::-webkit-scrollbar{display:none}
+  .viewer-tools .tool-cluster{flex:none}
+  .inspector{min-width:0;width:100%}
+  .panel-tabs{display:flex;min-width:0;overflow-x:auto;scrollbar-width:none;gap:2px}
+  .panel-tabs::-webkit-scrollbar{display:none}
+  .panel-tabs button{flex:1 0 62px;white-space:nowrap}
+  .panel-scroll{min-width:0;overflow-x:hidden}
+  .app-status{min-width:0;overflow:hidden;white-space:nowrap}
+  .app-status>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .status-qualifier{display:none}
+}
+@media(max-width:700px) and (max-height:700px) and (orientation:portrait){.workspace{grid-template-rows:minmax(210px,46%) minmax(0,1fr)}}
