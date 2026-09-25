@@ -19,13 +19,11 @@ function render(){const v=view(),key=v==='range'?'range':'sink';
  b.addEventListener('click',()=>{selected=id;grid.querySelectorAll('[data-cabinet]').forEach(node=>node.setAttribute('aria-pressed',String(node.dataset.cabinet===id)));$('elevation-selection').textContent=id+' · '+width+' W × '+height+' H in · V.4 cabinet schedule';window.MUSIE?.selectItem?.(id);});grid.append(b);}
  $('elevation-selection').textContent=selected&&catalog[selected]?.wall===key?selected+' · '+catalog[selected].width+' W × '+catalog[selected].height+' H in · V.4 cabinet schedule':'Dimensions are cabinet box sizes in inches, from the V.4 schedule.';
 }
-function close(){stage.hidden=true;toggle.setAttribute('aria-pressed','false');toggle.textContent='2D elevation';}
-function open(){if(drawToggle.getAttribute('aria-expanded')==='true')drawToggle.click();stage.hidden=false;toggle.setAttribute('aria-pressed','true');toggle.textContent='Return to 3D';render();}
-toggle.addEventListener('click',()=>stage.hidden?open():close());$('elevation-close').addEventListener('click',close);
-document.querySelector('.view-tabs').addEventListener('click',e=>{if(!e.target.closest('[data-view]'))return;requestAnimationFrame(()=>{if(view()==='overview')close();else if(!stage.hidden)render();});});
+function close(returnToDesign=true){stage.hidden=true;toggle.setAttribute('aria-pressed','false');toggle.textContent='Cabinet dimensions';if(returnToDesign&&view()!=='overview')window.MUSIE_DESIGN?.open();}
+function open(){if(drawToggle.getAttribute('aria-expanded')==='true')drawToggle.click();window.MUSIE_DESIGN?.close();stage.hidden=false;toggle.setAttribute('aria-pressed','true');toggle.textContent='Back to V.4 design';render();}
+toggle.addEventListener('click',()=>stage.hidden?open():close());$('elevation-close').addEventListener('click',()=>close());
+document.querySelector('.view-tabs').addEventListener('click',e=>{if(!e.target.closest('[data-view]'))return;requestAnimationFrame(()=>{if(view()==='overview')close(false);else if(!stage.hidden)render();});});
 window.addEventListener('musie:rebuilt',()=>{if(!stage.hidden)render();});
 window.addEventListener('musie:selection',e=>{selected=e.detail.id||'';if(!stage.hidden)render();});
-// Opening view follows the dimensioned V.4 wall. The 3D engine is still
-// available through the adjacent view control.
-open();
+window.MUSIE_ELEVATION={open,close};
 })();
