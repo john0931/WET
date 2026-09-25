@@ -1,14 +1,15 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id), key='musie-studio-v4-decisions';
+const $=id=>document.getElementById(id),key='musie-studio-v4-decisions';
 const fmt=n=>new Intl.NumberFormat('en-CA',{style:'currency',currency:'CAD',maximumFractionDigits:0}).format(n);
+const ids=['ikea-list','centura-payment','countertop-choice','floor-pattern','sink-choice','hood-fit'];
 let records={};try{const saved=JSON.parse(localStorage.getItem(key)||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))records=saved;}catch{}
 const cards=[...document.querySelectorAll('#panel-decisions .decision-card')];
-const ids=['ikea-list','centura-payment','countertop-choice','floor-pattern'];
 const fixedStatus=card=>/\b(SELECTED|CONFIRMED|PAID)\b/i.test(card.querySelector('.decision-heading span')?.textContent||'');
 function updateCount(){const count=cards.filter((card,i)=>!fixedStatus(card)&&!records[ids[i]]?.resolved).length;
  for(const id of ['header-open-count','tab-open-count'])$(id).textContent=String(count);
  $('decision-shortcut').setAttribute('aria-label',count+' open checks before ordering');
  $('decision-shortcut').classList.toggle('all-clear',count===0);
+ document.dispatchEvent(new CustomEvent('musie:decisionchange',{detail:{openCount:count}}));
 }
 function redraw(){cards.forEach((card,i)=>{
  if(fixedStatus(card))return;
@@ -30,10 +31,10 @@ cards.forEach((card,i)=>{
  const stamp=document.createElement('p');stamp.className='decision-stamp';stamp.setAttribute('aria-live','polite');
  controls.append(label,action,stamp);card.append(controls);
  action.addEventListener('click',()=>{
- const id=ids[i];if(records[id]?.resolved){delete records[id];}
- else{records[id]={resolved:true,note:note.value.trim(),date:new Date().toISOString()};}
- try{localStorage.setItem(key,JSON.stringify(records));}catch{$('status').textContent='Decision saved for this session; export a copy to keep it.';}
- redraw();
+  const id=ids[i];if(records[id]?.resolved){delete records[id];}
+  else{records[id]={resolved:true,note:note.value.trim(),date:new Date().toISOString()};}
+  try{localStorage.setItem(key,JSON.stringify(records));}catch{$('status').textContent='Decision saved for this session; export a copy to keep it.';}
+  redraw();
  });
 });
 function syncBudget(result){let data;try{data=JSON.parse($('budget-data').textContent)}catch{}
@@ -44,48 +45,28 @@ function syncBudget(result){let data;try{data=JSON.parse($('budget-data').textCo
  $('header-priced-bar').style.width=fill+'%';$('header-priced-bar').closest('.status-meter').setAttribute('aria-valuenow',String(fill));
  $('header-priced-bar').classList.toggle('over',total>ceiling);
 }
-function csvCell(value){let text=String(value??'');if(/^[\s\uFEFF]*[=+\-@]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';}
-function parseCSV(text){
- text=String(text||'').replace(/^\uFEFF/,'');const rows=[];let row=[],field='',quoted=false;
- for(let i=0;i<text.length;i++){const ch=text[i];
-  if(quoted){if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}else if(ch==='"')quoted=false;else field+=ch;}
-  else if(ch==='"'&&field==='')quoted=true;
-  else if(ch===','){row.push(field.replace(/\r$/,''));field='';}
-  else if(ch==='\n'){row.push(field.replace(/\r$/,''));field='';if(row.some(v=>v!==''))rows.push(row);row=[];}
-  else field+=ch;
- }
- if(quoted)throw Error('CSV has an unmatched quotation mark.');
- if(field!==''||row.length){row.push(field.replace(/\r$/,''));if(row.some(v=>v!==''))rows.push(row);}
- return rows;
+function csvCell(v){let value=String(v??'');if(/^[\s\uFEFF]*[=+\-@]/.test(value))value="'"+value;return '"'+value.replaceAll('"','""')+'"';}
+function parseCSV(input){const s=input.replace(/^\uFEFF/,'');const rows=[];let row=[],cell='',quoted=false;
+ for(let i=0;i<s.length;i++){const c=s[i];if(quoted){if(c==='"'&&s[i+1]==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c;}
+  else if(c==='"'){quoted=true;}else if(c===','){row.push(cell);cell='';}else if(c==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell='';}else cell+=c;}
+ if(quoted)throw Error('The CSV has an unfinished quoted field.');if(cell!==''||row.length){row.push(cell.replace(/\r$/,''));rows.push(row);}return rows;
 }
 $('export-decisions').addEventListener('click',()=>{
- const rows=[['id','title','status','note','recorded_at']];
- cards.forEach((card,i)=>{const id=ids[i];if(fixedStatus(card))return;const record=records[id];rows.push([id,card.querySelector('.decision-heading strong').textContent,record?.resolved?'Recorded':'Open',record?.note||'',record?.date||'']);});
- const csv='\uFEFF'+rows.map(row=>row.map(csvCell).join(',')).join('\r\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
- a.href=URL.createObjectURL(blob);a.download='Musie-decision-record.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),30000);
+ const rows=[['record_type','version','decision_id','resolved','date','note'],...ids.map(id=>{const r=records[id]||{};return['musie-project-decisions','1',id,r.resolved===true?'true':'false',r.date||'',r.note||''];})];
+ const blob=new Blob(['\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Musie-decision-record.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),30000);
 });
 $('import-decisions').addEventListener('click',()=>$('decisions-file').click());
 $('decisions-file').addEventListener('change',async e=>{
  const file=e.target.files?.[0];if(!file)return;
- try{
-  const table=parseCSV(await file.text());if(!table.length)throw Error('CSV is empty.');
-  const header=table.shift().map(v=>v.trim().toLowerCase()),required=['id','title','status','note','recorded_at'];
-  if(required.some((name,i)=>header[i]!==name))throw Error('CSV columns do not match the decision-record format.');
-  const next={},seen=new Set();
-  for(const row of table){
-   if(row.length!==required.length)throw Error('A CSV row has the wrong number of columns.');
-   const [id,title,status,note,date]=row;
-   if(!ids.includes(id)||seen.has(id))throw Error('CSV contains an unknown or duplicate decision.');
-   seen.add(id);const card=cards[ids.indexOf(id)];
-   if(fixedStatus(card)||title!==card.querySelector('.decision-heading strong').textContent)throw Error('A decision name does not match this project.');
-   if(status==='Recorded'){
-    if(note.length>500||!date||Number.isNaN(Date.parse(date)))throw Error('A recorded decision needs a note of 500 characters or fewer and a valid date.');
-    next[id]={resolved:true,note,date};
-   }else if(status!=='Open'||note||date)throw Error('An open decision must not contain a note or recorded date.');
-  }
-  records=next;localStorage.setItem(key,JSON.stringify(records));redraw();$('status').textContent='CSV decision record imported.';
- }catch(err){$('status').textContent='Could not import that CSV decision record: '+err.message;}
- finally{e.target.value='';}
+ try{const rows=parseCSV(await file.text());if(!rows.length)throw Error('Empty CSV');
+  const header=rows[0].map(x=>x.trim().toLowerCase()),expected=['record_type','version','decision_id','resolved','date','note'];
+  if(expected.some((x,i)=>header[i]!==x)||header.length!==expected.length)throw Error('Unexpected CSV columns');
+  const next={};for(const row of rows.slice(1)){if(row.every(v=>!v))continue;if(row.length!==expected.length||row[0]!=='musie-project-decisions'||row[1]!=='1'||!ids.includes(row[2]))throw Error('Invalid decision record row');
+   const resolved=row[3].trim().toLowerCase();if(!['true','false'].includes(resolved))throw Error('Invalid resolved value');
+   if(resolved==='true'){if(typeof row[4]!=='string'||Number.isNaN(Date.parse(row[4])))throw Error('Invalid decision date');next[row[2]]={resolved:true,note:row[5].slice(0,500),date:row[4]};}}
+  records=next;localStorage.setItem(key,JSON.stringify(records));redraw();$('status').textContent='Decision record CSV imported.';
+ }catch{$('status').textContent='Could not import that decision record CSV.';}finally{e.target.value='';}
 });
 redraw();syncBudget();window.addEventListener('musie:budgetdraw',e=>syncBudget(e.detail?.result));
 })();
