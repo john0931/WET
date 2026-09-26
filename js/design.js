@@ -39,7 +39,7 @@ function renderFloor(){
 function render(){
  const v=views[active()]||views.sink;const src=v.image||(window.MUSIE_DRAWINGS||[])[0]?.src;
  if(!src)return;
- const isFloor=active()==='plan'&&planKind==='floor';
+ const isPlan=active()==='plan';stage.classList.toggle('has-plan-nav',isPlan);const isFloor=isPlan&&planKind==='floor';
  $('design-plan-nav').hidden=active()!=='plan';
  $('design-plan-cabinet').setAttribute('aria-pressed',String(!isFloor));$('design-plan-floor').setAttribute('aria-pressed',String(isFloor));
  $('design-plan-cabinet').classList.toggle('active',!isFloor);$('design-plan-floor').classList.toggle('active',isFloor);
