@@ -1,6 +1,6 @@
 /* Static offline cache for GitHub Pages project deployment. Bump CACHE_VERSION when changing the asset set. */
 'use strict';
-const CACHE_VERSION='musie-studio-shell-v2';
+const CACHE_VERSION='musie-studio-shell-v3';
 const PRECACHE_URLS=[
   "./",
   "./index.html",
@@ -112,22 +112,26 @@ self.addEventListener('activate',event=>{
   await self.clients.claim();
  })());
 });
-async function cachedOrFetch(request){
- const cache=await caches.open(CACHE_VERSION);
- const cached=await cache.match(request,{ignoreSearch:true});
- if(cached)return cached;
- const response=await fetch(request);
- if(response.ok&&response.type==='basic')await cache.put(request,response.clone());
- return response;
+function canonicalRequest(request){
+ const url=new URL(request.url);url.search='';url.hash='';
+ return new Request(url.href);
 }
-async function navigation(request){
- const cache=await caches.open(CACHE_VERSION);
+async function networkFirst(request){
+ const cache=await caches.open(CACHE_VERSION),key=canonicalRequest(request);
  try{
   const response=await fetch(request);
-  if(response.ok&&response.type==='basic')await cache.put(request,response.clone());
+  if(response.ok&&response.type==='basic'){try{await cache.put(key,response.clone());}catch{}}
+  return response;
+ }catch{return await cache.match(key)||Response.error();}
+}
+async function navigation(request){
+ const cache=await caches.open(CACHE_VERSION),key=canonicalRequest(request);
+ try{
+  const response=await fetch(request);
+  if(response.ok&&response.type==='basic'){try{await cache.put(key,response.clone());}catch{}}
   return response;
  }catch{
-  return await cache.match(request,{ignoreSearch:true})||
+  return await cache.match(key)||
     await cache.match(new URL('./',SCOPE_URL).href,{ignoreSearch:true})||
     await cache.match(new URL('./index.html',SCOPE_URL).href,{ignoreSearch:true})||
     new Response('The offline copy is not ready yet. Connect to the internet and open the studio once.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
@@ -139,5 +143,5 @@ self.addEventListener('fetch',event=>{
  const url=new URL(request.url);
  if(url.origin!==self.location.origin)return;
  if(request.mode==='navigate')event.respondWith(navigation(request));
- else event.respondWith(cachedOrFetch(request).catch(()=>caches.match(request,{ignoreSearch:true})));
+ else event.respondWith(networkFirst(request));
 });
