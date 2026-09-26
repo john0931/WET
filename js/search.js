@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),areaNames={project:'Project',design:'Design',item:'Item',decisions:'Checks',concepts:'Concepts',budget:'Budget',sourcing:'Products'};
-const txt=el=>(el?.innerText||el?.textContent||'').replace(/\\s+/g,' ').trim(),norm=s=>String(s).toLocaleLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^\\p{L}\\p{N}]+/gu,' ').trim();
+const txt=el=>(el?.innerText||el?.textContent||'').replace(/\s+/g,' ').trim(),norm=s=>String(s).toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 const escape=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dialog=document.createElement('dialog');dialog.id='studio-search-dialog';dialog.className='studio-search-dialog';dialog.setAttribute('aria-label','Search the kitchen studio');
 dialog.innerHTML='<div class="studio-search-shell"><div class="studio-search-head"><div class="studio-search-title"><strong>Search the studio</strong><button type="button" class="studio-search-close" aria-label="Close search">Close</button></div><label class="studio-search-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.4"></circle><path d="m16 16 5 5"></path></svg><input id="studio-search-input" type="search" enterkeyhint="search" autocomplete="off" placeholder="Cabinet, product, check, cost…"></label><p class="studio-search-hint">Search project notes, checks, costs, cabinets and product references.</p></div><div id="studio-search-results" class="studio-search-results" role="listbox" aria-label="Search results"><div class="studio-search-empty">Type to search this studio.</div></div></div>';document.body.append(dialog);
@@ -14,7 +14,7 @@ function rows(){
    const body=txt(el);if(body.length<3||body.length>1800)return;
    let target=el;
    if(el.matches('li,label')&&!el.matches('label.field'))target=el.closest('article,details,.budget-line,.decision-card')||el;
-   if(el.matches('h2,h3,h4,summary'))target=el.closest('section,details,article')||el;
+   if(el.matches('h2,h3,h4,summary'))target=el.closest('details,article')||el.closest('section:not(.tab-panel)')||el;
    const full=txt(target);if(!full||full.length>1800)return;
    const title=(el.matches('h2,h3,h4,summary')?body:(target.querySelector('h2,h3,h4,summary,strong')?.textContent||body)).trim();
    all.push({tab,el,target,title,full});
@@ -26,7 +26,7 @@ function rows(){
  return all.filter(x=>{const k=x.tab+'|'+(x.pickerValue||x.target.tagName+':'+txt(x.target).slice(0,160));if(seen.has(k))return false;seen.add(k);return true;});
 }
 function search(q){
- const terms=norm(q).split(/\\s+/).filter(Boolean);
+ const terms=norm(q).split(/\s+/).filter(Boolean);
  if(!terms.length){current=[];active=-1;results.innerHTML='<div class="studio-search-empty">Type to search this studio.</div>';return;}
  current=rows().map(r=>{
   const title=norm(r.title),text=norm(r.title+' '+r.full),hit=terms.filter(t=>text.includes(t)).length;
