@@ -30,12 +30,12 @@ function renderFloor(){
  L.counts.forEach(c=>{
   const item=document.createElement('div');item.className='floor-legend-item';
   const sw=document.createElement('i');sw.style.background=floorMode==='size'?L.COLORS[c.index]:L.NATURAL[c.index];
-  const copy=document.createElement('span');copy.innerHTML='<b>'+c.size+' · '+c.total+'</b><small>'+ (c.total-c.cut)+' full · '+c.cut+' cut</small><small>top-up box: '+[4,7,13,26][c.index]+' pcs</small>';
+  const copy=document.createElement('span');copy.innerHTML='<b>'+c.size+' · '+c.total+'</b><small>'+ (c.total-c.cut)+' full · '+c.cut+' cut</small><small>single-size top-up box: '+[4,7,13,26][c.index]+' pcs</small>';
   item.append(sw,copy);legend.append(item);
  });
  const sf=n=>n.toLocaleString('en-CA',{maximumFractionDigits:1});
  $('floor-summary').textContent=L.total+' pieces · tiled floor ≈ '+sf(L.floorArea)+' sq ft · gross tile area represented ≈ '+sf(L.pieceArea)+' sq ft · ordered 240.25 sq ft (31 cartons). Dashed = cut piece; '+L.slivers+' cuts are under 2½″ (heavy outline). Shift the start line to remove slivers if possible.';
- $('floor-assumptions').textContent='Draft from A.03 (208⅛″ × 141¾″), not field-measured. Sink wall is at top; tile runs under cabinets. Full tiles align to the dining edge with a ¼″ movement gap; a roughly 7⅞″ cut row is hidden under the sink-wall cabinets, with roughly 5⅝″ cuts balanced at both side walls. The drawing shows the 45° hardwood transition. Assumes a ⅛″ grout joint. '+L.slivers+' cuts are under 2½″; installer should adjust the start line, confirm room measurements and carton mix, and approve the setting-out before work.';
+ $('floor-assumptions').textContent='Draft setting-out from A.03 (208⅛″ × 141¾″), not field-measured. Centura’s 20 cm module is about 7⅞″. The manufacturer’s laying-pattern sheet was not supplied, so the repeat and per-size counts are provisional, not a verified mixed-carton breakdown. Sink wall is at top; tile runs under cabinets. Full tiles align to the dining edge with a ¼″ movement gap; a roughly 7⅞″ cut row is hidden under the sink-wall cabinets, with roughly 5⅝″ cuts balanced at both side walls. The drawing shows the 45° hardwood transition. Assumes a ⅛″ grout joint. '+L.slivers+' cuts are under 2½″; the roughly '+sf(L.pieceArea)+' sq ft gross tile estimate counts a whole tile for each cut and does not credit reusable offcuts, so it is not a final takeoff. Installer should adjust the start line, confirm room measurements and carton mix, and approve the setting-out before work.';
 }
 function render(){
  const v=views[active()]||views.sink;const src=v.image||(window.MUSIE_DRAWINGS||[])[0]?.src;
