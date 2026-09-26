@@ -52,7 +52,7 @@ img,svg,canvas,video{max-width:100%}
 @media(min-width:1400px){
   .workspace{grid-template-columns:minmax(0,1fr) 420px}
 }
-@media(max-width:700px){
+@media(max-width:991.98px){
   .workspace:has(.viewer.floor-plan-open){grid-template-rows:minmax(0,1fr)}
   .workspace:has(.viewer.floor-plan-open)>.inspector{display:none}
   .viewer.floor-plan-open{grid-template-rows:auto minmax(0,1fr);min-height:0}
@@ -61,7 +61,6 @@ img,svg,canvas,video{max-width:100%}
   .design-stage.is-floor-plan .design-caption{display:none!important}
   .design-stage.is-floor-plan .design-floor-view{gap:8px}
   .design-stage.is-floor-plan .floor-map{width:100%;min-height:0}
-  .source-gallery{grid-template-columns:minmax(0,1fr)}
   .project-section-heading{flex-wrap:wrap}
 }
 @media(max-width:360px){
