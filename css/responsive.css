@@ -109,3 +109,14 @@ img,svg,canvas,video{max-width:100%}
  .studio-search-dialog[open]{animation:studio-search-in .16s ease-out}
  @keyframes studio-search-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 }
+
+/* Full workspace backup controls */
+.workspace-backup{margin:18px 0;padding:16px;border:1px solid #d9ded4;border-radius:14px;background:#f5f5ef}
+.workspace-backup h3{margin-top:0}
+.workspace-backup-preview{margin-top:14px;padding:14px;border:1px solid #d8c48e;border-radius:12px;background:#fff9e8}
+.workspace-backup-preview p{margin:8px 0 12px}
+@media(max-width:700px){
+ .workspace-backup{padding:14px}
+ .workspace-backup .button-row{display:grid;grid-template-columns:1fr}
+ .workspace-backup .button-row button{width:100%;min-height:48px}
+}
