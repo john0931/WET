@@ -40,6 +40,7 @@ function render(){
  const v=views[active()]||views.sink;const src=v.image||(window.MUSIE_DRAWINGS||[])[0]?.src;
  if(!src)return;
  const isPlan=active()==='plan';stage.classList.toggle('has-plan-nav',isPlan);const isFloor=isPlan&&planKind==='floor';
+ if(isFloor&&matchMedia('(max-width:700px)').matches&&document.querySelector('.inspector.controls-open'))$('panel-toggle').click();
  $('design-plan-nav').hidden=active()!=='plan';
  $('design-plan-cabinet').setAttribute('aria-pressed',String(!isFloor));$('design-plan-floor').setAttribute('aria-pressed',String(isFloor));
  $('design-plan-cabinet').classList.toggle('active',!isFloor);$('design-plan-floor').classList.toggle('active',isFloor);

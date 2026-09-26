@@ -252,3 +252,8 @@ button,select,input,summary{-webkit-tap-highlight-color:transparent}
  .viewer-tools>.tool-cluster{flex:0 0 auto;flex-wrap:wrap}
  #panel-toggle{width:auto!important;min-width:82px!important;padding-inline:10px!important}
 }
+@media(max-width:700px){
+ #floor-layout-shortcut{flex:0 0 auto;min-height:36px!important;padding:5px 8px!important;font-size:10px!important;white-space:nowrap;border-color:#9aaa94;background:#f7f8f3;color:#315e4b;font-weight:700}
+ .floor-mode-tools{font-size:9px}
+ .floor-map{min-height:170px;max-height:48vh}
+}
