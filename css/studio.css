@@ -257,3 +257,15 @@ button,select,input,summary{-webkit-tap-highlight-color:transparent}
  .floor-mode-tools{font-size:9px}
  .floor-map{min-height:170px;max-height:48vh}
 }
+
+
+/* Mobile floor plan: reserve the viewer for the map and let its details scroll. */
+@media(max-width:700px){
+ .viewer.floor-plan-open{grid-template-rows:auto minmax(0,1fr)}
+ .viewer.floor-plan-open .viewer-tools,.viewer.floor-plan-open .viewer-caption{display:none!important}
+ .design-stage.is-floor-plan{grid-template-rows:auto auto minmax(0,1fr);gap:4px;padding:6px}
+ .design-stage.is-floor-plan .design-caption{display:none!important}
+ .design-stage.is-floor-plan .design-floor-view{min-height:0;overflow-y:auto;overscroll-behavior:contain;gap:5px}
+ .design-stage.is-floor-plan .floor-map{flex:0 0 auto;min-height:190px;max-height:none}
+ .design-stage.is-floor-plan .floor-summary,.design-stage.is-floor-plan .floor-assumptions{font-size:9px;line-height:1.35}
+}

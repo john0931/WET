@@ -40,7 +40,7 @@ function renderFloor(){
 function render(){
  const v=views[active()]||views.sink;const src=v.image||(window.MUSIE_DRAWINGS||[])[0]?.src;
  if(!src)return;
- const isPlan=active()==='plan';stage.classList.toggle('has-plan-nav',isPlan);const isFloor=isPlan&&planKind==='floor';
+ const isPlan=active()==='plan';stage.classList.toggle('has-plan-nav',isPlan);const isFloor=isPlan&&planKind==='floor';stage.classList.toggle('is-floor-plan',isFloor);document.querySelector('.viewer').classList.toggle('floor-plan-open',isFloor);
  if(isFloor&&matchMedia('(max-width:700px)').matches&&document.querySelector('.inspector.controls-open'))$('panel-toggle').click();
  $('design-plan-nav').hidden=active()!=='plan';
  $('design-plan-cabinet').setAttribute('aria-pressed',String(!isFloor));$('design-plan-floor').setAttribute('aria-pressed',String(isFloor));
@@ -56,7 +56,7 @@ function render(){
  $('design-title').textContent=v.title;$('design-source').textContent=v.source;
  $('design-dimensions').hidden=active()==='plan';
 }
-function close(){stage.hidden=true;const refs=$('source-ref-toggle');if(refs.getAttribute('aria-expanded')==='true')refs.click();document.querySelector('.view-count').textContent='ASHLEY’S LAYOUT · CONCEPT PREVIEW';}
+function close(){stage.hidden=true;stage.classList.remove('is-floor-plan');document.querySelector('.viewer').classList.remove('floor-plan-open');const refs=$('source-ref-toggle');if(refs.getAttribute('aria-expanded')==='true')refs.click();document.querySelector('.view-count').textContent='ASHLEY’S LAYOUT · CONCEPT PREVIEW';}
 function open(){window.MUSIE_ELEVATION?.close(false);stage.hidden=false;document.querySelector('.view-count').textContent='ASHLEY’S V.4 DESIGN';render();}
 function showFloor(){
  planKind='floor';
