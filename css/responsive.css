@@ -34,7 +34,12 @@ img,svg,canvas,video{max-width:100%}
 @media(max-height:660px){
   .workspace{grid-template-rows:minmax(190px,42dvh) minmax(0,1fr)}
 }
-@media(min-width:701px){
+@media(min-width:576px){
+  .source-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(min-width:768px){
+  .source-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .design-stage.is-floor-plan .floor-legend{grid-template-columns:repeat(4,minmax(0,1fr))}
   .workspace{grid-template-rows:minmax(320px,48dvh) minmax(0,1fr)}
   .view-tabs button{padding-inline:8px}
 }
@@ -44,7 +49,7 @@ img,svg,canvas,video{max-width:100%}
   .workspace:has(.viewer.floor-plan-open){grid-template-rows:minmax(0,1fr)}
   .design-stage.is-floor-plan .design-floor-view{overflow:auto}
 }
-@media(min-width:1500px){
+@media(min-width:1400px){
   .workspace{grid-template-columns:minmax(0,1fr) 420px}
 }
 @media(max-width:700px){
