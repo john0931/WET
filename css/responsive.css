@@ -120,3 +120,25 @@ img,svg,canvas,video{max-width:100%}
  .workspace-backup .button-row{display:grid;grid-template-columns:1fr}
  .workspace-backup .button-row button{width:100%;min-height:48px}
 }
+
+/* Installable, offline-first field access */
+.offline-guide{margin:16px 0;padding:13px 15px;border:1px solid #d9ded4;border-radius:12px;background:#f5f5ef}
+.offline-guide summary{font-weight:700;cursor:pointer}
+.offline-guide p,.offline-guide ol{margin:10px 0 0;line-height:1.55}
+.offline-guide li{margin:5px 0}
+.offline-guide #install-app{margin-top:12px;min-height:44px;padding:8px 14px;border:0;border-radius:9px;background:#315e4b;color:#fff;font:inherit;font-weight:700}
+.app-status #status{flex:1;max-width:none;min-width:0}
+.offline-status{display:inline-flex;flex:0 0 auto;align-items:center;gap:6px;white-space:nowrap;font-size:10px;color:#315e4b}
+.offline-status i{width:8px;height:8px;border-radius:50%;background:#7b9271}
+.offline-status[data-state=offline] i{background:#bd7d37}
+.offline-status[data-state=error] i{background:#b35b4f}
+.offline-status[data-state=offline]{color:#855b27}
+.offline-status[data-state=error]{color:#9c3d35}
+@media(max-width:700px){
+ .offline-guide{margin:13px 0;padding:12px}
+ .offline-guide #install-app{width:100%;min-height:48px}
+ .app-status{gap:8px}
+ .app-status #status{flex:1 1 auto;max-width:none}
+ .offline-status{font-size:9px}
+ .offline-status span{max-width:94px;overflow:hidden;text-overflow:ellipsis}
+}
