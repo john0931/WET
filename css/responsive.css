@@ -121,6 +121,12 @@ img,svg,canvas,video{max-width:100%}
  .workspace-backup .button-row button{width:100%;min-height:48px}
 }
 
+/* Give the phone viewer the freed screen area when controls are hidden. */
+@media(max-width:700px){
+  body.viewer-focused .workspace{grid-template-rows:minmax(0,1fr)!important}
+  body.viewer-focused .viewer{min-height:0}
+}
+
 /* Installable, offline-first field access */
 .offline-guide{margin:16px 0;padding:13px 15px;border:1px solid #d9ded4;border-radius:12px;background:#f5f5ef}
 .offline-guide summary{font-weight:700;cursor:pointer}
