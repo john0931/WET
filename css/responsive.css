@@ -1,0 +1,69 @@
+/* Canonical responsive layout. Phone is the baseline; larger layouts enhance it. */
+html,body{width:100%;min-width:320px;max-width:100%;overflow-x:hidden}
+img,svg,canvas,video{max-width:100%}
+.workspace{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:minmax(220px,46dvh) minmax(0,1fr);
+  width:100%;min-width:0;max-width:none;
+  height:calc(100vh - 120px);
+  height:calc(100dvh - 120px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  gap:0;
+}
+.viewer,.inspector{min-width:0;min-height:0}
+.viewer{overflow:hidden}
+.inspector{display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+.panel-scroll{min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.view-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));min-width:0}
+.view-tabs button{min-width:0;min-height:44px;padding-inline:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.viewer-tools{min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.viewer-tools>*{flex:0 0 auto}
+.panel-tabs{display:flex;min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:thin;scroll-snap-type:x proximity}
+.panel-tabs button{flex:0 0 auto;min-height:44px;scroll-snap-align:start}
+#panel-scroll,.panel-scroll>*{max-width:100%;min-width:0}
+#panel-scroll img,.panel-scroll img{display:block;max-width:100%;height:auto;object-fit:contain}
+.source-gallery{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.source-gallery img{width:100%;height:auto;max-height:min(62dvh,420px);object-fit:contain}
+.panel-scroll input,.panel-scroll select,.panel-scroll button{min-height:44px}
+.design-stage.is-floor-plan{min-width:0;min-height:0}
+.design-stage.is-floor-plan .design-floor-view{min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.design-stage.is-floor-plan .floor-map{display:block;width:100%;max-width:100%;height:auto;max-height:none;min-height:0;flex:0 0 auto;object-fit:contain}
+.design-stage.is-floor-plan .floor-legend{grid-template-columns:repeat(2,minmax(0,1fr))}
+.design-stage.is-floor-plan .floor-legend-item{min-width:0}
+.design-stage.is-floor-plan .floor-summary,.design-stage.is-floor-plan .floor-assumptions{font-size:clamp(11px,3vw,13px);line-height:1.45}
+@media(max-height:660px){
+  .workspace{grid-template-rows:minmax(190px,42dvh) minmax(0,1fr)}
+}
+@media(min-width:701px){
+  .workspace{grid-template-rows:minmax(320px,48dvh) minmax(0,1fr)}
+  .view-tabs button{padding-inline:8px}
+}
+@media(min-width:992px){
+  .workspace{grid-template-columns:minmax(0,1fr) minmax(330px, min(32vw,400px));grid-template-rows:minmax(0,1fr)}
+  .inspector{display:grid}
+  .workspace:has(.viewer.floor-plan-open){grid-template-rows:minmax(0,1fr)}
+  .design-stage.is-floor-plan .design-floor-view{overflow:auto}
+}
+@media(min-width:1500px){
+  .workspace{grid-template-columns:minmax(0,1fr) 420px}
+}
+@media(max-width:700px){
+  .workspace:has(.viewer.floor-plan-open){grid-template-rows:minmax(0,1fr)}
+  .workspace:has(.viewer.floor-plan-open)>.inspector{display:none}
+  .viewer.floor-plan-open{grid-template-rows:auto minmax(0,1fr);min-height:0}
+  .viewer.floor-plan-open .viewer-tools,.viewer.floor-plan-open .viewer-caption{display:none!important}
+  .design-stage.is-floor-plan{grid-template-rows:auto auto minmax(0,1fr);gap:6px;padding:6px}
+  .design-stage.is-floor-plan .design-caption{display:none!important}
+  .design-stage.is-floor-plan .design-floor-view{gap:8px}
+  .design-stage.is-floor-plan .floor-map{width:100%;min-height:0}
+  .source-gallery{grid-template-columns:minmax(0,1fr)}
+  .project-section-heading{flex-wrap:wrap}
+}
+@media(max-width:360px){
+  .view-tabs button{font-size:10px;padding-inline:2px}
+  .design-stage.is-floor-plan .floor-legend{grid-template-columns:minmax(0,1fr)}
+}
+@media(orientation:landscape) and (max-width:900px){
+  .workspace{grid-template-rows:minmax(180px,48dvh) minmax(0,1fr)}
+  .workspace:has(.viewer.floor-plan-open){grid-template-rows:minmax(0,1fr)}
+}
