@@ -1,47 +1,143 @@
-(()=>{'use strict';
-const status=document.getElementById('offline-status'),label=document.getElementById('offline-status-label'),installButton=document.getElementById('install-app');
-let ready=false,failed=false,installPrompt=null;
-function paint(){
- if(!status||!label)return;
- const online=navigator.onLine;
- let text,state,aria;
- if(!('serviceWorker'in navigator)){state='error';text=online?'Online only':'Offline · unavailable';aria='Offline use is unavailable in this browser.';}
- else if(failed&&!ready){state='error';text=online?'Offline setup failed':'Offline · unavailable';aria='Offline copy could not be prepared. Connect to the internet and reload.';}
- else if(!online){state=ready?'offline':'error';text=ready?'Offline · cached':'Offline · not ready';aria=ready?'Offline; using the saved app copy.':'Offline copy is not ready on this device.';}
- else if(ready){state='ready';text='Offline copy ready';aria='Offline copy is ready on this device.';}
- else{state='checking';text='Preparing offline copy';aria='Downloading app files for offline use.';}
- status.dataset.state=state;label.textContent=text;status.setAttribute('aria-label',aria);
-}
-function bindWorker(registration){
- const update=()=>{if(registration.active){ready=true;failed=false;paint();}};
- update();
- if(registration.installing)registration.installing.addEventListener('statechange',()=>{
-  if(registration.installing?.state==='redundant'&&!registration.active){failed=true;paint();}
-  update();
- });
- registration.addEventListener('updatefound',()=>{
-  const worker=registration.installing;if(!worker)return;
-  worker.addEventListener('statechange',()=>{
-   if(worker.state==='redundant'&&!registration.active){failed=true;paint();}
-   update();
-  });
- });
- navigator.serviceWorker.ready.then(reg=>{ready=!!reg.active;failed=false;paint();}).catch(()=>{failed=true;paint();});
-}
-if('serviceWorker'in navigator){
- navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).then(bindWorker).catch(()=>{failed=true;paint();});
-}else{failed=true;}
-window.addEventListener('online',paint);window.addEventListener('offline',paint);paint();
-window.addEventListener('beforeinstallprompt',event=>{
- event.preventDefault();installPrompt=event;
- if(installButton)installButton.hidden=false;
+/* Static offline cache for GitHub Pages project deployment. Bump CACHE_VERSION when changing the asset set. */
+'use strict';
+const CACHE_VERSION='musie-studio-shell-v2';
+const PRECACHE_URLS=[
+  "./",
+  "./index.html",
+  "./assets/app-icon-192.png",
+  "./assets/app-icon-512.png",
+  "./assets/apple-touch-icon.png",
+  "./assets/design/peninsula-cover.webp",
+  "./assets/design/plan-a05.webp",
+  "./assets/design/range-a11.webp",
+  "./assets/design/sink-a09.webp",
+  "./assets/design/sink-perspective-a09.webp",
+  "./css/responsive.css",
+  "./css/studio.css",
+  "./data/cabinets.js",
+  "./js/app.js",
+  "./js/backup.js",
+  "./js/budget.js",
+  "./js/decisions.js",
+  "./js/design.js",
+  "./js/drawings.js",
+  "./js/elevations.js",
+  "./js/floor-layout.js",
+  "./js/offline.js",
+  "./js/postprocessing.js",
+  "./js/product-library-images.js",
+  "./js/products.js",
+  "./js/project.js",
+  "./js/search.js",
+  "./js/source-assets.js",
+  "./js/three-legacy.js",
+  "./js/three-view.js",
+  "./js/xlsx-vendor.js",
+  "./manifest.webmanifest",
+  "./product-library/LINK_AUDIT_2026-09-25.md",
+  "./product-library/image_occurrences.csv",
+  "./product-library/image_register.csv",
+  "./product-library/index.html",
+  "./product-library/product_links_enhanced.csv",
+  "./product-library/thumbnails_hd/img_001_p01_xref22.webp",
+  "./product-library/thumbnails_hd/img_002_p01_xref23.webp",
+  "./product-library/thumbnails_hd/img_003_p01_xref24.webp",
+  "./product-library/thumbnails_hd/img_004_p01_xref25.webp",
+  "./product-library/thumbnails_hd/img_005_p01_xref26.webp",
+  "./product-library/thumbnails_hd/img_006_p01_xref27.webp",
+  "./product-library/thumbnails_hd/img_007_p02_xref47.webp",
+  "./product-library/thumbnails_hd/img_008_p02_xref48.webp",
+  "./product-library/thumbnails_hd/img_009_p03_xref67.webp",
+  "./product-library/thumbnails_hd/img_010_p04_xref85.webp",
+  "./product-library/thumbnails_hd/img_011_p04_xref86.webp",
+  "./product-library/thumbnails_hd/img_012_p05_xref106.webp",
+  "./product-library/thumbnails_hd/img_013_p05_xref107.webp",
+  "./product-library/thumbnails_hd/img_014_p05_xref108.webp",
+  "./product-library/thumbnails_hd/img_015_p06_xref124.webp",
+  "./product-library/thumbnails_hd/img_016_p07_xref139.webp",
+  "./product-library/thumbnails_hd/img_017_p08_xref160.webp",
+  "./product-library/thumbnails_hd/img_018_p08_xref161.webp",
+  "./product-library/thumbnails_hd/img_019_p08_xref162.webp",
+  "./product-library/thumbnails_hd/img_020_p08_xref163.webp",
+  "./product-library/thumbnails_hd/img_021_p08_xref164.webp",
+  "./product-library/thumbnails_hd/img_022_p09_xref190.webp",
+  "./product-library/thumbnails_hd/img_023_p09_xref191.webp",
+  "./product-library/thumbnails_hd/img_024_p09_xref192.webp",
+  "./product-library/thumbnails_hd/img_025_p09_xref193.webp",
+  "./product-library/thumbnails_hd/img_026_p10_xref221.webp",
+  "./product-library/thumbnails_hd/img_027_p10_xref222.webp",
+  "./product-library/thumbnails_hd/img_028_p10_xref223.webp",
+  "./product-library/thumbnails_hd/img_029_p10_xref224.webp",
+  "./product-library/thumbnails_hd/img_030_p10_xref225.webp",
+  "./product-library/thumbnails_hd/img_031_p10_xref226.webp",
+  "./product-library/thumbnails_hd/img_032_p11_xref247.webp",
+  "./product-library/thumbnails_hd/img_033_p12_xref264.webp",
+  "./product-library/thumbnails_hd/img_034_p13_xref282.webp",
+  "./product-library/thumbnails_hd/img_035_p13_xref283.webp",
+  "./product-library/thumbnails_hd/img_036_p14_xref301.webp",
+  "./product-library/thumbnails_hd/img_037_p14_xref302.webp",
+  "./product-library/thumbnails_hd/img_038_p15_xref319.webp",
+  "./product-library/thumbnails_hd/img_039_p16_xref336.webp",
+  "./product-library/thumbnails_hd/img_040_p16_xref337.webp",
+  "./product-library/thumbnails_hd/img_041_p17_xref355.webp",
+  "./product-library/thumbnails_hd/img_042_p18_xref366.webp",
+  "./product-library/thumbnails_hd/img_043_p19_xref376.webp",
+  "./product-library/thumbnails_hd/img_044_p20_xref386.webp",
+  "./product-library/thumbnails_hd/img_045_p21_xref426.webp",
+  "./product-library/thumbnails_hd/img_046_p21_xref427.webp",
+  "./product-library/thumbnails_hd/img_047_p21_xref428.webp",
+  "./product-library/thumbnails_hd/img_048_p21_xref429.webp",
+  "./product-library/thumbnails_hd/img_049_p21_xref430.webp",
+  "./product-library/thumbnails_hd/img_050_p21_xref431.webp",
+  "./product-library/thumbnails_hd/img_051_p21_xref432.webp",
+  "./product-library/thumbnails_hd/img_052_p22_xref468.webp",
+  "./product-library/thumbnails_hd/img_053_p22_xref469.webp",
+  "./product-library/thumbnails_hd/img_054_p22_xref470.webp",
+  "./product-library/thumbnails_hd/img_055_p23_xref495.webp",
+  "./product-library/thumbnails_hd/img_056_p23_xref496.webp",
+  "./product-library/thumbnails_hd/img_057_p23_xref497.webp"
+];
+const SCOPE_URL=self.registration.scope;
+self.addEventListener('install',event=>{
+ event.waitUntil((async()=>{
+  const cache=await caches.open(CACHE_VERSION);
+  await cache.addAll(PRECACHE_URLS.map(path=>new Request(new URL(path,SCOPE_URL),{cache:'reload'})));
+  await self.skipWaiting();
+ })());
 });
-if(installButton)installButton.addEventListener('click',async()=>{
- if(!installPrompt)return;
- installPrompt.prompt();const choice=await installPrompt.userChoice;
- installPrompt=null;installButton.hidden=true;
- const main=document.getElementById('status');
- if(main)main.textContent=choice?.outcome==='accepted'?'Kitchen Studio installed.':'Install can be started from your browser menu.';
+self.addEventListener('activate',event=>{
+ event.waitUntil((async()=>{
+  const names=await caches.keys();
+  await Promise.all(names.filter(name=>name.startsWith('musie-studio-shell-')&&name!==CACHE_VERSION).map(name=>caches.delete(name)));
+  await self.clients.claim();
+ })());
 });
-window.addEventListener('appinstalled',()=>{if(installButton)installButton.hidden=true;});
-})();
+async function cachedOrFetch(request){
+ const cache=await caches.open(CACHE_VERSION);
+ const cached=await cache.match(request,{ignoreSearch:true});
+ if(cached)return cached;
+ const response=await fetch(request);
+ if(response.ok&&response.type==='basic')await cache.put(request,response.clone());
+ return response;
+}
+async function navigation(request){
+ const cache=await caches.open(CACHE_VERSION);
+ try{
+  const response=await fetch(request);
+  if(response.ok&&response.type==='basic')await cache.put(request,response.clone());
+  return response;
+ }catch{
+  return await cache.match(request,{ignoreSearch:true})||
+    await cache.match(new URL('./',SCOPE_URL).href,{ignoreSearch:true})||
+    await cache.match(new URL('./index.html',SCOPE_URL).href,{ignoreSearch:true})||
+    new Response('The offline copy is not ready yet. Connect to the internet and open the studio once.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
+ }
+}
+self.addEventListener('fetch',event=>{
+ const request=event.request;
+ if(request.method!=='GET')return;
+ const url=new URL(request.url);
+ if(url.origin!==self.location.origin)return;
+ if(request.mode==='navigate')event.respondWith(navigation(request));
+ else event.respondWith(cachedOrFetch(request).catch(()=>caches.match(request,{ignoreSearch:true})));
+});
