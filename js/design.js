@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id),stage=$('design-stage'),image=$('design-image'),mobile=$('design-mobile-source');
+const $=id=>document.getElementById(id),stage=$('design-stage'),image=$('design-image'),mobile=$('design-mobile-source'),imageWrap=$('design-image-wrap');
 const views={
  sink:{title:'Sink wall · Ashley’s V.4 design',source:'Intentional Space · A.09',image:'assets/design/sink-a09.webp',mobile:'assets/design/sink-perspective-a09.webp',alt:'V.4 sink wall with cream lower cabinets, cherry glass uppers, apron sink, and existing white refrigerator'},
  range:{title:'Range wall · Ashley’s V.4 design',source:'Intentional Space · A.11',image:'assets/design/range-a11.webp',alt:'V.4 range wall perspective with plaster hood, blue patterned tile, cherry glass uppers and cream lowers'},
@@ -33,8 +33,8 @@ function renderFloor(){
   item.append(sw,copy);legend.append(item);
  });
  const sf=n=>n.toLocaleString('en-CA',{maximumFractionDigits:1});
- $('floor-summary').textContent=L.total+' pieces · tiled floor ≈ '+sf(L.floorArea)+' sq ft · whole pieces used ≈ '+sf(L.pieceArea)+' sq ft · ordered 240.25 sq ft (31 cartons). Dashed = cut piece; '+L.slivers+' cuts are under 2½″ (heavy outline). Shift the start line to remove slivers if possible.';
- $('floor-assumptions').textContent='Draft from A.03 room outline, using Cerdomus 20 cm modules and an assumed ⅛″ grout joint. Verify room measurements, carton mix and starting line with the installer before laying. Tile runs under cabinets. Full tiles align with the visible dining edge; the cut row is hidden beneath the sink-wall cabinets.';
+ $('floor-summary').textContent=L.total+' pieces · tiled floor ≈ '+sf(L.floorArea)+' sq ft · gross tile area represented ≈ '+sf(L.pieceArea)+' sq ft · ordered 240.25 sq ft (31 cartons). Dashed = cut piece; '+L.slivers+' cuts are under 2½″ (heavy outline). Shift the start line to remove slivers if possible.';
+ $('floor-assumptions').textContent='Draft from A.03 (208⅛″ × 141¾″), not field-measured. Sink wall is at top; tile runs under cabinets. Full tiles align to the dining edge with a ¼″ movement gap; a roughly 7⅞″ cut row is hidden under the sink-wall cabinets, with roughly 5⅝″ cuts balanced at both side walls. The drawing shows the 45° hardwood transition. Assumes a ⅛″ grout joint. '+L.slivers+' cuts are under 2½″; installer should adjust the start line, confirm room measurements and carton mix, and approve the setting-out before work.';
 }
 function render(){
  const v=views[active()]||views.sink;const src=v.image||(window.MUSIE_DRAWINGS||[])[0]?.src;
@@ -44,10 +44,10 @@ function render(){
  $('design-plan-nav').hidden=active()!=='plan';
  $('design-plan-cabinet').setAttribute('aria-pressed',String(!isFloor));$('design-plan-floor').setAttribute('aria-pressed',String(isFloor));
  $('design-plan-cabinet').classList.toggle('active',!isFloor);$('design-plan-floor').classList.toggle('active',isFloor);
- $('design-floor-view').hidden=!isFloor;$('design-image-wrap').hidden=isFloor;
+ $('design-floor-view').hidden=!isFloor;if(imageWrap)imageWrap.hidden=isFloor;
  if(isFloor){
   $('design-title').textContent='Valdorcia floor tile layout · draft';
-  $('design-source').textContent='A.03 room outline · Cerdomus size module · verify onsite';
+  $('design-source').textContent='A.03 room outline · 208⅛″ × 141¾″ · verify onsite';
   $('design-dimensions').hidden=true;
   renderFloor();return;
  }
