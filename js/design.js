@@ -6,8 +6,9 @@ const views={
  peninsula:{title:'Peninsula · Ashley’s V.4 design',source:'Intentional Space · Kitchen v.4 cover perspective',image:'assets/design/peninsula-cover.webp',alt:'V.4 peninsula and adjoining sink wall perspective with cream and cherry cabinets'},
  plan:{title:'Cabinet plan · Ashley’s V.4 design',source:'Intentional Space · A.05',image:'assets/design/plan-a05.webp',alt:'V.4 dimensioned cabinet plan'}
 };
-let planKind='cabinet',floorMode='size';
-const active=()=>document.querySelector('.view-tabs [data-view].active')?.dataset.view||'sink';
+let planKind='cabinet',floorMode='size',currentView='sink';
+const active=()=>currentView;
+function setViewState(view){currentView=view;document.querySelectorAll('.view-tabs [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));}
 const layout=()=>window.MUSIE_FLOOR_LAYOUT;
 function renderFloor(){
  const L=layout(); if(!L)return;
@@ -58,12 +59,14 @@ function render(){
 function close(){stage.hidden=true;const refs=$('source-ref-toggle');if(refs.getAttribute('aria-expanded')==='true')refs.click();document.querySelector('.view-count').textContent='ASHLEY’S LAYOUT · CONCEPT PREVIEW';}
 function open(){window.MUSIE_ELEVATION?.close(false);stage.hidden=false;document.querySelector('.view-count').textContent='ASHLEY’S V.4 DESIGN';render();}
 function showFloor(){
- planKind='floor';document.querySelector('.view-tabs [data-view="plan"]').click();
- requestAnimationFrame(()=>{render();$('stage').scrollIntoView({behavior:'smooth',block:'nearest'});});
+ planKind='floor';
+ window.MUSIE?.setView?.('plan');setViewState('plan');
+ open();render();
+ requestAnimationFrame(()=>$('stage').scrollIntoView({behavior:'smooth',block:'nearest'}));
 }
 $('design-dimensions').addEventListener('click',()=>window.MUSIE_ELEVATION?.open());
 $('design-3d').addEventListener('click',()=>document.querySelector('.view-tabs [data-view="overview"]').click());
-document.querySelector('.view-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b)return;if(b.dataset.view!=='plan')planKind='cabinet';requestAnimationFrame(()=>b.dataset.view==='overview'?close():open());});
+document.querySelector('.view-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b)return;setViewState(b.dataset.view);if(b.dataset.view!=='plan')planKind='cabinet';requestAnimationFrame(()=>b.dataset.view==='overview'?close():open());});
 $('design-plan-nav').addEventListener('click',e=>{const b=e.target.closest('[data-plan-kind]');if(!b)return;planKind=b.dataset.planKind;render();});
 $('floor-modes').addEventListener('click',e=>{const b=e.target.closest('[data-floor-mode]');if(!b)return;floorMode=b.dataset.floorMode;renderFloor();});
 document.addEventListener('click',e=>{if(e.target.closest('[data-floor-layout]'))showFloor();});
