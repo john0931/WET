@@ -1,6 +1,6 @@
 /* Static offline cache for GitHub Pages project deployment. Bump CACHE_VERSION when changing the asset set. */
 'use strict';
-const CACHE_VERSION='musie-studio-shell-v6';
+const CACHE_VERSION='musie-studio-shell-v7';
 const PRECACHE_URLS=[
   "./",
   "./index.html",
