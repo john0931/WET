@@ -35,11 +35,11 @@ function install2DFallback(reason){
  window.MUSIE=Object.assign(window.MUSIE||{},fallback);
  if(reason)console.warn('3D viewer disabled; 2D project tools remain active.',reason);
 }
-const canvas=document.createElement('canvas');
+const rendererCanvas=document.createElement('canvas');
 const contextAttributes={antialias:true,preserveDrawingBuffer:true};
-const webglContext=canvas.getContext('webgl2',contextAttributes)||canvas.getContext('webgl',contextAttributes)||canvas.getContext('experimental-webgl',contextAttributes);
+const webglContext=rendererCanvas.getContext('webgl2',contextAttributes)||rendererCanvas.getContext('webgl',contextAttributes)||rendererCanvas.getContext('experimental-webgl',contextAttributes);
 if(!webglContext){install2DFallback();return;}
-let renderer;try{renderer=new THREE.WebGLRenderer({canvas,context:webglContext,antialias:true,preserveDrawingBuffer:true});}catch(e){install2DFallback(e);return;}
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas:rendererCanvas,context:webglContext,antialias:true,preserveDrawingBuffer:true});}catch(e){install2DFallback(e);return;}
 window.MUSIE=Object.assign(window.MUSIE||{},{is3DReady:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=0.88;stage.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','Interactive dimensioned kitchen model. Fixed camera controls and cabinet selection are available.');renderer.domElement.setAttribute('role','img');
 const scene=new THREE.Scene();scene.background=new THREE.Color('#dad6ce');const camera=new THREE.PerspectiveCamera(44,1,.5,1800);const root=new THREE.Group();root.name='79 Chemin Musie concept inches';scene.add(root);
