@@ -11,9 +11,38 @@ function getFeatureConfig(id){if(!featureIds.includes(id))return null;const o=st
 function materialFor(id){const cfg=getCabinetConfig(id)||getFeatureConfig(id);if(!cfg)return materials.lower;const key='item-'+id;if(!materials[key])materials[key]=finish(cfg.finish,cfg.color);return materials[key];}
 function emit(name,detail){window.dispatchEvent(new CustomEvent('musie:'+name,{detail}));}
 const W=208.125,D=141.75;let CT=2/2.54,H=34.5+CT;const CS=61.125,SINK=104.625;
-let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});}catch(e){$('error').style.display='block';return;}
+function install2DFallback(reason){
+ const notice=$('error');
+ notice.textContent='3D preview unavailable in this browser session. The V.4 drawings, floor tile plan, project, checks and budget remain available.';
+ notice.style.display='block';
+ ['zin','zout','left','right','quality','png','clear-selection'].forEach(id=>{if($(id))$(id).hidden=true;});
+ const help=document.querySelector('.gesture-help');if(help)help.textContent='Use Sink wall, Range wall or Plan for the fixed drawings.';
+ $('status').textContent='3D preview unavailable · drawings, floor tile plan, project and budget are available.';
+ let fallbackSelected=null;
+ const fallback={
+  is3DReady:false,state,scene:null,camera:null,root:null,setView(v){document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));},
+  rebuild(){},syncUI(){for(const k of keys){const el=$(k);if(!el)continue;if(typeof state[k]==='boolean')el.checked=state[k];else if(state[k]!==undefined&&state[k]!==null&&typeof state[k]!=='object')el.value=state[k];}},
+  applyState(partial){Object.assign(state,partial||{});state.cabinetOverrides=state.cabinetOverrides||{};state.featureOverrides=state.featureOverrides||{};this.syncUI();},
+  itemDescriptions,catalog:itemDescriptions,cabinetIds,featureIds,getCabinetConfig,getFeatureConfig,
+  selectItem(id){if(!itemDescriptions[id])return false;fallbackSelected=id;window.dispatchEvent(new CustomEvent('musie:selection',{detail:{id}}));return true;},
+  clearSelection(){fallbackSelected=null;window.dispatchEvent(new CustomEvent('musie:selection',{detail:{id:null}}));},
+  get selected(){return fallbackSelected;},
+  selectionDetail(id){return {id,info:itemDescriptions[id]||null,description:describeItem({id}),meta:{id},config:getCabinetConfig(id)||getFeatureConfig(id)};},
+  describeItem,getCameraState(){return null;},restoreCamera(){return false;},focusItem(){},render(){},download,
+  exportOBJ(){return '# 3D geometry export is unavailable without WebGL.';},
+  modelInfo:{units:'inches',roomWidth:W,roomDepth:D,sinkCounterLength:147,peninsulaLength:74.5,source:'79 Chemin Musie - Kitchen v.4.pdf',revision:'September 2026 V4',ceilingAssumed:true}
+ };
+ window.MUSIE=Object.assign(window.MUSIE||{},fallback);
+ if(reason)console.warn('3D viewer disabled; 2D project tools remain active.',reason);
+}
+const canvas=document.createElement('canvas');
+const contextAttributes={antialias:true,preserveDrawingBuffer:true};
+const webglContext=canvas.getContext('webgl2',contextAttributes)||canvas.getContext('webgl',contextAttributes)||canvas.getContext('experimental-webgl',contextAttributes);
+if(!webglContext){install2DFallback();return;}
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas,context:webglContext,antialias:true,preserveDrawingBuffer:true});}catch(e){install2DFallback(e);return;}
+window.MUSIE=Object.assign(window.MUSIE||{},{is3DReady:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=0.88;stage.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','Interactive dimensioned kitchen model. Fixed camera controls and cabinet selection are available.');renderer.domElement.setAttribute('role','img');
-const scene=new THREE.Scene();scene.background=new THREE.Color('#dad6ce');const camera=new THREE.PerspectiveCamera(44,1,.5,1800);let composer=null,aoPass=null;const root=new THREE.Group();root.name='79 Chemin Musie concept inches';scene.add(root);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#dad6ce');const camera=new THREE.PerspectiveCamera(44,1,.5,1800);const root=new THREE.Group();root.name='79 Chemin Musie concept inches';scene.add(root);
 const hemi=new THREE.HemisphereLight(0xffffff,0x9b8165,2);scene.add(hemi);const sun=new THREE.DirectionalLight(0xfff2dc,3.2);sun.position.set(90,280,-90);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-280,right:280,top:280,bottom:-280,near:1,far:650});sun.shadow.bias=-.0002;sun.shadow.normalBias=.04;sun.shadow.radius=4;scene.add(sun);scene.add(sun.target);sun.target.position.set(100,0,70);
 const fill=new THREE.DirectionalLight(0xffffff,1.3);fill.position.set(50,150,260);scene.add(fill);
 // A baked radiance environment provides reflected windows and room light.
@@ -130,8 +159,8 @@ const sh={id:'Peninsula bookcase',dimensions:'Approx. 63″ run × 11″ shelf d
 tube([[SINK,ceil,13],[SINK,82,13]],.15,materials.metal);const pendantMesh=cylinder(2,5,5,SINK,79.5,13,materials.wood);pendantMesh.userData={id:'Pendant'};meshes.push(pendantMesh);const bulb=new THREE.PointLight(0xffd8a1,state.daylight?90:350,70,2);bulb.position.set(SINK,75,13);root.add(bulb);
 hemi.intensity=state.daylight?1.1:.35;sun.intensity=state.daylight?2.5:.3;fill.intensity=state.daylight?1.0:.35;root.updateMatrixWorld(true);if(selectionToRestore)selectItem(selectionToRestore,false);updateCamera();render();emit('rebuilt',{state});}
 function updateCamera(){const phoneScale=matchMedia('(max-width:700px)').matches?.88:1;const r=orbit.r*Math.max(1,1.35/camera.aspect)*phoneScale;camera.near=(view==='sink'||view==='range')?Math.max(.5,r-45):view==='focus'?Math.max(.5,r-focusClip):.5;camera.updateProjectionMatrix();camera.position.set(orbit.target.x+r*Math.sin(orbit.phi)*Math.sin(orbit.theta),orbit.target.y+r*Math.cos(orbit.phi),orbit.target.z+r*Math.sin(orbit.phi)*Math.cos(orbit.theta));camera.lookAt(orbit.target);camera.updateMatrixWorld();}
-function render(){if(composer)composer.render();else renderer.render(scene,camera);}
-function resize(){camera.aspect=stage.clientWidth/stage.clientHeight;camera.updateProjectionMatrix();renderer.setSize(stage.clientWidth,stage.clientHeight);if(composer)composer.setSize(stage.clientWidth,stage.clientHeight);updateCamera();render();}new ResizeObserver(resize).observe(stage);
+function render(){renderer.render(scene,camera);}
+function resize(){camera.aspect=stage.clientWidth/stage.clientHeight;camera.updateProjectionMatrix();renderer.setSize(stage.clientWidth,stage.clientHeight);updateCamera();render();}new ResizeObserver(resize).observe(stage);
 function setView(v){if(!['overview','sink','range','peninsula','plan'].includes(v))return;view=v;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));const poses={overview:[W/2,34,D/2,335,1.05,1.0],sink:[110,48,0,233,0,Math.PI/2],range:[134,43,D,210,Math.PI,Math.PI/2],peninsula:[185,20,102,208,Math.PI/2,1.21],plan:[W/2,0,D/2,315,0,.001]};const p=poses[v];orbit.target.set(p[0],p[1],p[2]);[orbit.r,orbit.theta,orbit.phi]=p.slice(3);updateCamera();render();}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));$('zin').onclick=()=>{orbit.r=Math.max(80,orbit.r*.85);updateCamera();render();};$('zout').onclick=()=>{orbit.r=Math.min(650,orbit.r*1.18);updateCamera();render();};$('left').onclick=()=>{freeOrbit();orbit.theta-=.25;updateCamera();render();};$('right').onclick=()=>{freeOrbit();orbit.theta+=.25;updateCamera();render();};
 function freeOrbit(){view='free';document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));}
@@ -159,7 +188,7 @@ function download(data,name,type='application/json'){const a=document.createElem
 $('png').onclick=()=>{render();const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='Musie-'+view+'.png';a.click();};
 function exportOBJ(){root.updateMatrixWorld(true);let out='# 79 Chemin Musie concept v1\n# Units: metres (source model inches)\n# No fabrication approval. See source and assumptions in HTML.\n',offset=1;const p=new THREE.Vector3();root.traverse(o=>{if(!o.isMesh||!o.visible)return;let a=o.parent;while(a){if(!a.visible)return;a=a.parent;}let geo=o.geometry.index?o.geometry.toNonIndexed():o.geometry;const pos=geo.getAttribute('position');if(!pos)return;out+='o '+(o.userData.id||o.name||'part').replace(/[^a-z0-9_-]/gi,'_')+'\n';for(let i=0;i<pos.count;i++){p.fromBufferAttribute(pos,i).applyMatrix4(o.matrixWorld).multiplyScalar(.0254);out+=`v ${p.x.toFixed(5)} ${p.y.toFixed(5)} ${p.z.toFixed(5)}\n`;}for(let i=0;i+2<pos.count;i+=3)out+=`f ${offset+i} ${offset+i+1} ${offset+i+2}\n`;offset+=pos.count;if(geo!==o.geometry)geo.dispose();});return out;}
 $('obj').onclick=()=>download(exportOBJ(),'Musie-kitchen-concept.obj','text/plain');
-$('quality').onclick=()=>{if(aoPass){aoPass.enabled=!aoPass.enabled;$('quality').textContent='Shadows: '+(aoPass.enabled?'on':'off');render();}};window.MUSIE={state,scene,camera,root,setView,rebuild,syncUI,applyState,itemDescriptions,catalog:itemDescriptions,cabinetIds,featureIds,getCabinetConfig,getFeatureConfig,selectItem,clearSelection,get selected(){return selected;},selectionDetail,describeItem,getCameraState,restoreCamera,focusItem,download,exportOBJ,meshCount:()=>meshes.length,render,modelInfo:{units:'inches',roomWidth:W,roomDepth:D,sinkCounterLength:147,peninsulaLength:74.5,source:'79 Chemin Musie - Kitchen v.4.pdf',revision:'September 2026 V4',ceilingAssumed:true}};
-if(window.MUSIEPOST){const P=window.MUSIEPOST;composer=new P.EffectComposer(renderer);composer.addPass(new P.RenderPass(scene,camera));aoPass=new P.SSAOPass(scene,camera,stage.clientWidth,stage.clientHeight);aoPass.kernelRadius=7;aoPass.minDistance=.0002;aoPass.maxDistance=.09;composer.addPass(aoPass);composer.addPass(new P.OutputPass());}state.walls=true;syncUI();rebuild();resize();setView('sink');
+$('quality').onclick=()=>{renderer.shadowMap.enabled=!renderer.shadowMap.enabled;$('quality').textContent='Shadows: '+(renderer.shadowMap.enabled?'on':'off');render();};window.MUSIE={is3DReady:true,state,scene,camera,root,setView,rebuild,syncUI,applyState,itemDescriptions,catalog:itemDescriptions,cabinetIds,featureIds,getCabinetConfig,getFeatureConfig,selectItem,clearSelection,get selected(){return selected;},selectionDetail,describeItem,getCameraState,restoreCamera,focusItem,download,exportOBJ,meshCount:()=>meshes.length,render,modelInfo:{units:'inches',roomWidth:W,roomDepth:D,sinkCounterLength:147,peninsulaLength:74.5,source:'79 Chemin Musie - Kitchen v.4.pdf',revision:'September 2026 V4',ceilingAssumed:true}};
+state.walls=true;syncUI();rebuild();resize();setView('sink');
 })();
 

@@ -71,5 +71,5 @@ $('design-plan-nav').addEventListener('click',e=>{const b=e.target.closest('[dat
 $('floor-modes').addEventListener('click',e=>{const b=e.target.closest('[data-floor-mode]');if(!b)return;floorMode=b.dataset.floorMode;renderFloor();});
 document.addEventListener('click',e=>{if(e.target.closest('[data-floor-layout]'))showFloor();});
 window.MUSIE_DESIGN={open,close,showFloor};
-document.querySelector('.view-tabs [data-view="overview"]').click();
+document.querySelector('.view-tabs [data-view="'+(window.MUSIE?.is3DReady===false?'sink':'overview')+'"]').click();
 })();
